@@ -2,7 +2,6 @@
   // Disable built-in code formatter and validator
   "editor.formatOnSave": false,
   "javascript.format.enable": false,
-  "javascript.validate.enable": false,
 
   // Stylelint
   // Prevent both the editor’s stylesheet built-in linters and Stylelint
@@ -17,5 +16,14 @@
     ".eslintrc": "json",
     ".lintstagedrc": "json",
     ".stylelintrc": "json"
-  }
+  },
+
+  // Flow
+  // Run Flow from local Node modules.
+  "flow.useNPMPackagedFlow": true,
+
+  // Flow and ESLint
+  // Use Flow for static type checking and ESLint for JavaScript linting
+  // rather than built-in JavaScript & TypeScript validation.
+  "javascript.validate.enable": false
 }
