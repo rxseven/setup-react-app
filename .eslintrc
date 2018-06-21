@@ -4,7 +4,8 @@
     "node": true
   },
   "extends": [
-    "react-app"
+    "react-app",
+    "airbnb"
   ],
   "parser": "babel-eslint"
 }
