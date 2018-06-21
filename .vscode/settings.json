@@ -8,6 +8,7 @@
   "files.associations": {
     ".babelrc": "json",
     ".eslintrc": "json",
-    ".lintstagedrc": "json"
+    ".lintstagedrc": "json",
+    ".stylelintrc": "json"
   }
 }
