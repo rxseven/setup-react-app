@@ -4,6 +4,13 @@
   "javascript.format.enable": false,
   "javascript.validate.enable": false,
 
+  // Stylelint
+  // Prevent both the editor’s stylesheet built-in linters and Stylelint
+  // from reporting essentially the same errors.
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+
   // File associations to languages
   "files.associations": {
     ".babelrc": "json",
