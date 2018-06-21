@@ -105,8 +105,5 @@
       "node",
       "mjs"
     ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   }
 }
