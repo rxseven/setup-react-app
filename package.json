@@ -17,6 +17,8 @@
   "main": "index.jsx",
   "scripts": {
     "build": "node scripts/build.js",
+    "lint:script": "eslint src/**/*.{js,jsx}",
+    "lint:script:fix": "eslint --fix src/**/*.{js,jsx}",
     "precommit": "lint-staged",
     "start": "node scripts/start.js",
     "test": "node scripts/test.js --env=jsdom"
@@ -50,11 +52,12 @@
     "cross-env": "^5.2.0",
     "css-loader": "0.28.7",
     "eslint": "4.10.0",
+    "eslint-config-airbnb": "^16.1.0",
     "eslint-config-react-app": "^2.1.0",
     "eslint-loader": "1.9.0",
     "eslint-plugin-flowtype": "2.39.1",
     "eslint-plugin-import": "2.8.0",
-    "eslint-plugin-jsx-a11y": "5.1.1",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "7.4.0",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
@@ -105,8 +108,5 @@
       "node",
       "mjs"
     ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   }
 }
