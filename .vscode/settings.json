@@ -1,0 +1,6 @@
+{
+  // Disable built-in code formatter and validator
+  "editor.formatOnSave": false,
+  "javascript.format.enable": false,
+  "javascript.validate.enable": false
+}
