@@ -15,6 +15,11 @@
   },
   "private": true,
   "main": "index.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node scripts/start.js",
+    "test": "node scripts/test.js --env=jsdom"
+  },
   "dependencies": {
     "chalk": "1.1.3",
     "dotenv": "4.0.0",
@@ -58,11 +63,6 @@
     "webpack": "3.8.1",
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2"
-  },
-  "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
   },
   "jest": {
     "collectCoverageFrom": [
