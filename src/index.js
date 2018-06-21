@@ -1,8 +1,11 @@
+// Module dependencies
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+
 import registerServiceWorker from './registerServiceWorker';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+// Render React element into the DOM
+ReactDOM.render(<h1>Welcome to React</h1>, document.getElementById('root'));
+
+// Service worker
 registerServiceWorker();
