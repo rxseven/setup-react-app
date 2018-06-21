@@ -59,6 +59,7 @@
     "html-webpack-plugin": "2.29.0",
     "husky": "^0.14.3",
     "jest": "20.0.4",
+    "lint-staged": "^7.2.0",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "react-dev-utils": "^5.0.1",
