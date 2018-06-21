@@ -22,7 +22,8 @@
     "lint:stylesheet": "stylelint \"src/**/*.scss\"",
     "precommit": "lint-staged",
     "start": "node scripts/start.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "type": "flow"
   },
   "dependencies": {
     "chalk": "1.1.3",
