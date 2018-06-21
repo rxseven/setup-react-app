@@ -1,5 +1,15 @@
 {
   "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+  "coveragePathIgnorePatterns": [
+    "<rootDir>/build/",
+    "<rootDir>/config/",
+    "<rootDir>/node_modules/",
+    "<rootDir>/src/config/",
+    "<rootDir>/src/constants/",
+    "<rootDir>/src/dependencies/",
+    "<rootDir>/src/index.jsx",
+    "<rootDir>/src/registerServiceWorker.js"
+  ],
   "moduleFileExtensions": [
     "web.js",
     "js",
