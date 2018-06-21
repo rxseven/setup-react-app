@@ -17,6 +17,7 @@
   "main": "index.jsx",
   "scripts": {
     "build": "node scripts/build.js",
+    "precommit": "lint-staged",
     "start": "node scripts/start.js",
     "test": "node scripts/test.js --env=jsdom"
   },
@@ -57,7 +58,9 @@
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
     "html-webpack-plugin": "2.29.0",
+    "husky": "^0.14.3",
     "jest": "20.0.4",
+    "lint-staged": "^7.2.0",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "react-dev-utils": "^5.0.1",
