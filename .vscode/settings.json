@@ -2,5 +2,10 @@
   // Disable built-in code formatter and validator
   "editor.formatOnSave": false,
   "javascript.format.enable": false,
-  "javascript.validate.enable": false
+  "javascript.validate.enable": false,
+
+  // File associations to languages
+  "files.associations": {
+    ".babelrc": "json"
+  }
 }
