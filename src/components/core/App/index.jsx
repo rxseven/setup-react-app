@@ -1,9 +1,13 @@
+// @flow
 // Module dependencies
-import React from 'react';
+import * as React from 'react';
 import { hot } from 'react-hot-loader';
 
+// Types
+type Return = React.Node;
+
 // Component
-const App = () => <div>App component</div>;
+const App = (): Return => <div>App component</div>;
 
 // Module exports
 export default hot(module)(App);
