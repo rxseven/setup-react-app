@@ -7544,6 +7544,10 @@ react-router-last-location@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/react-router-last-location/-/react-router-last-location-1.1.0.tgz#cfa1958d7b1fbb22ace38f35b1d12b8ac5ef0326"
 
+react-router-scroll-memory@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-router-scroll-memory/-/react-router-scroll-memory-1.0.2.tgz#59817dffe4537fe226945193c8cfa28a6b243d9f"
+
 react-router@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-router/-/react-router-4.3.1.tgz#aada4aef14c809cb2e686b05cee4742234506c4e"
