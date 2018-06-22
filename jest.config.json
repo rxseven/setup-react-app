@@ -7,6 +7,10 @@
     "<rootDir>/src/config/",
     "<rootDir>/src/constants/",
     "<rootDir>/src/dependencies/",
+    "<rootDir>/src/HOCs/common/toJS",
+    "<rootDir>/src/reducers/",
+    "<rootDir>/src/sagas/",
+    "<rootDir>/src/store/",
     "<rootDir>/src/index.jsx",
     "<rootDir>/src/registerServiceWorker.js"
   ],
