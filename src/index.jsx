@@ -3,13 +3,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import registerServiceWorker from './registerServiceWorker';
+import registerServiceWorker from 'registerServiceWorker';
 
 // Starting point component
-import App from './components/core/App';
+import App from 'components/core/App';
 
 // Constants
-import HTML from './constants/elements/html';
+import HTML from 'constants/elements/html';
 
 // Initialize root HTML element
 const root = document.getElementById(HTML.root);
