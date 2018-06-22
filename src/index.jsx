@@ -6,10 +6,16 @@ import ReactDOM from 'react-dom';
 import registerServiceWorker from 'registerServiceWorker';
 
 // Starting point component
-import App from 'components/core/App';
+import Root from 'components/core/Root';
+
+// Redux store
+import configureStore from 'store/setup';
 
 // Constants
 import HTML from 'constants/elements/html';
+
+// Initialize Redux store
+const store = configureStore();
 
 // Initialize root HTML element
 const root = document.getElementById(HTML.root);
@@ -20,7 +26,7 @@ if (root == null) {
 }
 
 // Render React element into the DOM
-ReactDOM.render(<App />, root);
+ReactDOM.render(<Root store={store} />, root);
 
 // Service worker
 registerServiceWorker();
