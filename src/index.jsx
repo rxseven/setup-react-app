@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import registerServiceWorker from 'registerServiceWorker';
+import 'dependencies';
 
 // Starting point component
 import Root from 'components/core/Root';
