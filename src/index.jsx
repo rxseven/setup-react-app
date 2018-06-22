@@ -15,6 +15,9 @@ import configureStore from 'store/setup';
 // Constants
 import HTML from 'constants/elements/html';
 
+// Styles
+import './styles/index.scss';
+
 // Initialize Redux store
 const store = configureStore();
 
