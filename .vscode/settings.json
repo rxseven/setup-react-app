@@ -1,14 +1,14 @@
 {
-  // Disable built-in code formatter and validator
-  "editor.formatOnSave": false,
-  "javascript.format.enable": false,
-
   // Stylelint
   // Prevent both the editor’s stylesheet built-in linters and Stylelint
   // from reporting essentially the same errors.
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
+
+  // Prettier
+  // Format a file on save.
+  "editor.formatOnSave": true,
 
   // File associations to languages
   "files.associations": {
@@ -22,6 +22,11 @@
   // Flow
   // Run Flow from local Node modules.
   "flow.useNPMPackagedFlow": true,
+
+  // Prettier
+  // Disable the default JavaScript formatter (editor’s built-in) and allows
+  // Prettier to handle code formatting.
+  "javascript.format.enable": false,
 
   // Flow and ESLint
   // Use Flow for static type checking and ESLint for JavaScript linting
