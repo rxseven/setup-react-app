@@ -2,10 +2,18 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
+// Screens
+import Home from 'screens/main/Home';
+import NotFound from 'screens/main/404';
+
+// Constants
+import PATHS from 'constants/router/paths';
+
 // Component
 const Routes = () => (
   <Switch>
-    <Route path="/" render={() => <div>Home</div>} />
+    <Route component={Home} exact path={PATHS.main.home} />
+    <Route component={NotFound} />
   </Switch>
 );
 

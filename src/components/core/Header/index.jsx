@@ -1,8 +1,12 @@
 // @flow
 // Module dependencies
 import * as React from 'react';
+import { NavLink } from 'react-router-dom';
 
 import { Column, Container, Row } from 'components/common/Grid';
+
+// Constants
+import PATHS from 'constants/router/paths';
 
 // Styles
 import './styles.scss';
@@ -16,7 +20,11 @@ const Header = (): Return => (
     <Container>
       <Row>
         <Column>
-          <div styleName="brand">Setup React App</div>
+          <div styleName="brand">
+            <NavLink activeClassName="active" exact styleName="link" to={PATHS.main.home}>
+              Setup React App
+            </NavLink>
+          </div>
         </Column>
       </Row>
     </Container>
