@@ -2,12 +2,14 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-// Screens
-import Home from 'screens/main/Home';
-import NotFound from 'screens/main/404';
+import withLoadable from 'HOCs/common/withLoadable';
 
 // Constants
 import PATHS from 'constants/router/paths';
+
+// Screens
+const Home = withLoadable(() => import('screens/main/Home'));
+const NotFound = withLoadable(() => import('screens/main/404'));
 
 // Component
 const Routes = () => (
