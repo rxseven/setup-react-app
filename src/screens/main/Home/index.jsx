@@ -1,6 +1,7 @@
 // @flow
 // Module dependencies
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import ExLink from 'components/common/ExLink';
 import Layout from 'components/common/Layout';
@@ -36,6 +37,9 @@ const Home = (): Return => (
             <ExLink styles="btn btn-primary btn-sm" to={`https://github.com/${URLs.repo}`}>
               View on GitHub
             </ExLink>
+            <Link className="btn btn-secondary btn-sm" to="/404">
+              404
+            </Link>
           </div>
         </div>
       </Layout>
