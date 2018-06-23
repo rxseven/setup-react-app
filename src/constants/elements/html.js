@@ -1,3 +1,4 @@
 export default {
-  root: 'root'
+  root: 'root',
+  wrapper: 'wrapper'
 };
