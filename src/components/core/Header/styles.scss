@@ -1,0 +1,24 @@
+// Global styles
+@import '../../../styles/base/settings';
+
+// Container
+.container {
+  align-items: center;
+  background-color: #343a40;
+  display: flex;
+  height: $header-height-xs;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1;
+
+  @media (min-width: $breakpoint-sm) {
+    height: $header-height-sm;
+  }
+}
+
+// Branding
+.brand {
+  /* TODO */
+}
