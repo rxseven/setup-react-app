@@ -1,5 +1,10 @@
 // Global styles
 @import '../../../styles/base/settings';
+@import '../../../styles/mixins/transition';
+
+// Variables
+$color-bright: #fff;
+$color-light: rgba(255, 255, 255, 0.5);
 
 // Container
 .container {
@@ -20,5 +25,18 @@
 
 // Branding
 .brand {
-  /* TODO */
+  > .link {
+    @include transition-link;
+    color: $color-bright;
+
+    &:hover {
+      color: $color-light;
+      text-decoration: none;
+    }
+
+    &:global(.active) {
+      color: $color-light;
+      cursor: default;
+    }
+  }
 }
