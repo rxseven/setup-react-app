@@ -18,13 +18,17 @@ const defaultProps = {
 };
 
 // Component
-const ExLink = ({
-  children, replace, styles, to }:
-Props): Return => (
-  <a className={styles} href={to} rel="noopener noreferrer" target={replace ? '_self' : '_blank'}>
-    {children}
-  </a>
-);
+const ExLink = (props: Props): Return => {
+  const {
+    children, replace, styles, to
+  } = props;
+
+  return (
+    <a className={styles} href={to} rel="noopener noreferrer" target={replace ? '_self' : '_blank'}>
+      {children}
+    </a>
+  );
+};
 
 // Specify default values for props
 ExLink.defaultProps = defaultProps;
