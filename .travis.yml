@@ -12,3 +12,11 @@ script:
   - npm run build
 after_script:
   - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN npm run test:coverage:ci
+deploy:
+  provider: heroku
+  app:
+    develop: setup-react-app-dev
+    master: setup-react-app
+    staging: setup-react-app-staging
+  api_key:
+    secure: $HEROKU_API_KEY
