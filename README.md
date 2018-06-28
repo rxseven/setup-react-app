@@ -35,6 +35,7 @@ React app made easy :sunglasses:
 - [Using Absolute Imports](#using-absolute-imports)
 - [Using HTTPS in Development](#using-https-in-development)
 - [Debugging in the Editor](#debugging-in-the-editor)
+- [Debugging Tests](#debugging-tests)
 
 #### Ecosystem
 
@@ -3003,6 +3004,80 @@ Then, add the content below to `launch.json` file:
 
 1.  Start your app by running `yarn start` or `yarn start:https` command.
 2.  Open **Debug** panel in Visual Studio Code, select **Debug JavaScript** from a drop-down menu.
+3.  Start debugging by pressing **F5** or by clicking the **Start Debugging** button next to the drop-down menu.
+4.  You can then write code as usual, set breakpoints, make changes to the code, and debug your newly modified code, all from your editor.
+
+[Back to top](#table-of-contents)
+
+## Debugging Tests
+
+There are different ways to setup a debugger for Jest and Enzyme tests in Create React App. We will cover only debugging in Chrome and Visual Studio Code.
+
+> Note: debugging tests requires Node version 8 or higher.
+
+### Debugging tests in Chrome
+
+#### Configuration
+
+Add the following script to the `scripts` section in `package.json` file:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "test:coverage": "npm test -- --coverage --no-cache",
++     "test:debug": "react-scripts --inspect-brk test --runInBand --env=jsdom",
+      "test:staged": "...",
+      ...
+    }
+  }
+```
+
+> commit: [Add script for debugging tests in Chrome](https://github.com/rxseven/setup-react-app/commit/fec000a644a8be5adb7613988ab3098cbdc45114)
+
+#### Usage
+
+Follow the instruction [here](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#debugging-tests-in-chrome).
+
+### Debugging tests in Visual Studio Code
+
+Debugging Jest tests is supported out of the box for Visual Studio Code.
+
+#### Configuration
+
+Open `.vscode/launch.json` file and add the following configuration next to **Debug JavaScript** block:
+
+```diff
+  {
+    "configurations": [
+      {
+        "name": "Debug JavaScript",
+        ...
+        ...
+-     }
++     },
++     {
++       "args": ["test", "--runInBand", "--no-cache", "--env=jsdom"],
++       "console": "integratedTerminal",
++       "cwd": "${workspaceRoot}",
++       "internalConsoleOptions": "neverOpen",
++       "name": "Debug Tests",
++       "request": "launch",
++       "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
++       "protocol": "inspector",
++       "type": "node"
++     }
+    ],
+    "version": "0.2.0"
+  }
+```
+
+> commit: [Setup tests debugging for VSCode](https://github.com/rxseven/setup-react-app/commit/79e627d52c1e1792e350a4e5b4af302c7eec53a2)
+
+#### Usage
+
+1.  Start your app by running `yarn start` or `yarn start:https` command.
+2.  Open **Debug** panel in Visual Studio Code, select **Debug Tests** from a drop-down menu.
 3.  Start debugging by pressing **F5** or by clicking the **Start Debugging** button next to the drop-down menu.
 4.  You can then write code as usual, set breakpoints, make changes to the code, and debug your newly modified code, all from your editor.
 
