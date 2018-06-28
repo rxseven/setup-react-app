@@ -65,6 +65,7 @@ React app made easy :sunglasses:
 #### Deployment & Automated Tasks
 
 - [Deployment](#deployment)
+- [Continuous Integration](#continuous-integration)
 
 #### Appendix
 
@@ -7311,5 +7312,172 @@ heroku repo:reset -a setup-react-app
 ```
 
 > **Caution** this command will empty the remote repository, please use it carefully.
+
+[Back to top](#table-of-contents)
+
+## Continuous Integration
+
+[Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) (CI) is a practice where a team of developers merge their code early and often to the mainline or code repository. The main goal is to reduce the risk of integration problems, referred to as “integration hell” by waiting for the end of a sprint or a project to merge the work of all developers.
+
+One of the primary benefits of adopting continuous integration is that it will save your time during your development cycle by identifying and addressing conflicts early. It’s also a great way to reduce the amount of time spent on fixing conflicts, bugs, and regression by putting more emphasis on having a good test suite. Last but not least, it helps you share a better understanding of the codebase and the features that you’re developing for your users.
+
+### Setup
+
+In the following section will demonstrate how to setup continuous integration with [Travis CI](http://travis-ci.org).
+
+#### Configuration
+
+On the command line, create a configuration file in the project’s root directory:
+
+```sh
+touch .travis.yml
+```
+
+Then, add the following configuration to the newly created file:
+
+```yml
+language: node_js
+node_js:
+  - 6
+cache:
+  directories:
+    - node_modules
+```
+
+> commit: [Setup Travis CI](https://github.com/rxseven/setup-react-app/commit/47bf99980b7ad9a8d36d2b7f07d69e8f5bff5996)
+
+#### Running automated tasks
+
+The first step on your journey to continuous integration is setting up automated tasks, let’s add the following scripts to run your tasks automatically:
+
+```diff
+  language: node_js
+  node_js:
+    - 6
+  cache:
+    directories:
+      - node_modules
++ script:
++   - npm run lint:script
++   - npm run lint:stylesheet
++   - npm run type:check:focus
++   - npm run test:coverage
++   - npm run build
+```
+
+> commit: [Setup automated tasks](https://github.com/rxseven/setup-react-app/commit/1b9878a1a3449fb0a4c549905cbd9432afcf558d)
+
+#### Adding Travis CI’s build status badge
+
+You can embed status images (also known as badges or icons) that show the status of your build into your README file. For more information on adding build status badge, see [Embedding Status Images](https://docs.travis-ci.com/user/status-images/) on Travis CI documentation.
+
+1.  In Travis CI’s project dashboard, find a status icon next to the project title.
+2.  Click the icon to open a dialog box containing common templates for the status image URL.
+3.  Select the **master** branch and **Markdown** template in the dialog box.
+4.  Copy the embedded code snippet, and paste it to your `README.md` file:
+
+```diff
+  # Setup React App
++
++ [![Build Status](URL)
+```
+
+You should now be able to view the build status badge for your repository is publicly available on Travis CI, and your badge should look like this:
+
+[![Build Status](https://travis-ci.org/rxseven/setup-react-app.svg?branch=master)](https://travis-ci.org/rxseven/setup-react-app)
+
+You have set up continuous integration for your project which informs you when your tasks fails. Furthermore, it shows a fancy badge in your repository to inform other people that your project builds successfully. It adds credibility to the project.
+
+> commit: [Add Travis CI's build status badge to README](https://github.com/rxseven/setup-react-app/commit/dc4cab5e708f6c20d66678579750154eb2d37566)
+
+### Adding code coverage to find untested code
+
+Once you adopt automated testing, it is a good idea to couple it with a test coverage tool that will give you an idea of how much of your codebase is covered by your test suite.
+
+We will be using [Coveralls](https://coveralls.io/) with [Travis CI](http://travis-ci.org). Coveralls takes the build data from whichever CI service your project uses, parses it, and provides constant updates and statistics on your project’s code coverage to show you how coverage has changed with the new build, and what isn’t covered by tests.
+
+#### Installation
+
+First, let’s install Coveralls library on the command line as development dependency:
+
+```sh
+yarn add --dev coveralls
+```
+
+> commit: [Install coveralls package](https://github.com/rxseven/setup-react-app/commit/ed64918f5e7a017704b361a4d40150aeee1ed531)
+
+#### Connecting Travis CI to Coveralls
+
+**Coveralls**
+
+1.  Open your Coveralls’s repo settings page by clicking **Settings** menu at the right-top corner of the screen.
+2.  Under **Badge and Token** section, copy **Repo Token** to a clipboard.
+
+**Travis CI**
+
+1.  Open your Travis CI’s project settings page by clicking **More options** button (right next to the tabbed navigation).
+2.  Under **Environment Variables** section, add new environment variable for referencing your Coveralls’s Repo token:
+
+- Name: `COVERALLS_REPO_TOKEN`
+- Value: `REPO_KEY` _(the key you’ve copied from your Coveralls repo)_
+- Displaying value in build log: `disabled`
+
+3.  Click **Add** button to save the newly created variable.
+
+> **Best practices for securely storing API keys**<br>Storing API Keys, or any other sensitive information, on a Git repository is something to be avoided at all costs. Even if the repository is private, you should not see it as a safe place to store sensitive information. (details are available in [this article](https://medium.freecodecamp.org/how-to-securely-store-api-keys-4ff3ea19ebda))
+
+#### Setting up code coverage
+
+Add a new script to `package.json` file to introduce Coveralls as the following:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "test:coverage": "yarn test --coverage",
++     "test:coverage:ci": "cat ./coverage/lcov.info | node node_modules/.bin/coveralls",
+      "test:staged": "cross-env CI=true node scripts/test.js --env=jsdom --config jest.config.json --findRelatedTests"
+      ...
+    }
+  }
+```
+
+Then, extend the Travis CI’s configuration for reporting test coverage information to your Coveralls’s dashboard. To do this, add the following lines to `.travis.yml` file:
+
+```diff
+  ...
+  script:
+    ...
+    ...
++ after_script:
++   - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN npm run test:coverage:ci
+```
+
+For more information on configuring your Travis CI build to send results to Coveralls, see [this documentation](https://docs.travis-ci.com/user/coveralls/).
+
+> commit: [Setup Coveralls](https://github.com/rxseven/setup-react-app/commit/fe2bb2114184d3e5bd28c01754ef666718ef6eb3)
+
+#### Adding Coveralls’s coverage status badge
+
+1.  In Coveralls’s repo settings page, find **EMBED** button under **Badge and Token** section.
+2.  Click the button to open a dialog box containing common templates for the status image URL.
+3.  Copy the embedded code snippet from **Markdown** template, and paste it next to Travis CI’s status badge in `README.md` file:
+
+```diff
+  # Setup React App
+
+- [![Build Status](URL)
++ [![Build Status](URL) [![Coverage Status](URL)
+```
+
+You should now be able to view the coverage status badge for your repository is publicly available on Coveralls, and your badge should look like this:
+
+[![Coverage Status](https://coveralls.io/repos/github/rxseven/setup-react-app/badge.svg)](https://coveralls.io/github/rxseven/setup-react-app)
+
+That’s it.
+
+> commit: [Add Coveralls's coverage status badge to README](https://github.com/rxseven/setup-react-app/commit/a2e2978020037d906904129ba662056799c4948e)
+
+> It is good to aim a coverage above 80% but be careful not to confuse high percentage of coverage with a good test suite. A code coverage tool will help you find untested code but it is the quality of your tests that will make the difference at the end of the day.
 
 [Back to top](#table-of-contents)
