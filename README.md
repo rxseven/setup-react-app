@@ -14,6 +14,7 @@ React app made easy :sunglasses:
 - [Objective](#objective)
 - [What is Included](#what-is-included)
 - [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
 
 #### Getting Started
 
@@ -134,5 +135,26 @@ Heroku is a container-based cloud Platform as a Service (PaaS). The platform is 
 \* optional, but will be required in latter sections.
 
 > The usage of those tools and services will be explained in following sections.
+
+[Back to top](#table-of-contents)
+
+## Quick Start
+
+In your working directory, clone **Setup React App** from [GitHub](https://github.com/rxseven/setup-react-app):
+
+```sh
+git clone https://github.com/rxseven/setup-react-app.git
+```
+
+And run the following commands to get the app up and running:
+
+```sh
+cd setup-react-app
+nvm use
+yarn install
+yarn start
+```
+
+Then open [http://localhost:3000](http://localhost:3000) to view the app in your browser.
 
 [Back to top](#table-of-contents)
