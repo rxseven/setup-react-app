@@ -31,6 +31,7 @@ React app made easy :sunglasses:
 - [Running Static Type Checking](#running-static-type-checking)
 - [Running Tests](#running-tests)
 - [Formatting Code Automatically](#formatting-code-automatically)
+- [Using JSX Control Statements](#using-jsx-control-statements)
 
 #### Ecosystem
 
@@ -2741,5 +2742,95 @@ In `.lintstagedrc` file, add the following code block:
 > Note: make sure you have [`yarn format`](#running-code-formatting-through-the-cli) script defined beforehand.
 
 > commit: [Add pre-commit hook for running code formatting against staged files](https://github.com/rxseven/setup-react-app/commit/1aad338b7cd7bdece43dd8683fd1df6be24de25a)
+
+[Back to top](#table-of-contents)
+
+## Using JSX Control Statements
+
+There is no built-in looping or conditional syntax in React. JSX is not a templating library, it’s declarative syntactic sugar over functional JavaScript expressions. For more information, see [React - Conditional Rendering](https://reactjs.org/docs/conditional-rendering.html).
+
+### Setup
+
+[JSX Control Statements](https://github.com/AlexGilleran/jsx-control-statements) is a Babel plugin that extends JSX to add basic control statements (conditionals and loops). It provides a component-like syntax that keeps your `render` functions neat and readable, but desugars into clean, readable JavaScript.
+
+#### Installation
+
+On the command line, install the library as a development dependency:
+
+```sh
+yarn add --dev babel-plugin-jsx-control-statements
+```
+
+> commit: [Install babel-plugin-jsx-control-statements package](https://github.com/rxseven/setup-react-app/commit/3ae1bc2ec1160305fc80e9e941103e851dad60cb)
+
+#### Configuration
+
+Open `.babelrc` file and add the following line:
+
+```diff
+  {
++   "plugins": ["jsx-control-statements"],
+    "presets": ["react-app"]
+  }
+```
+
+> commit: [Setup JSX control statements](https://github.com/rxseven/setup-react-app/commit/dbbbac407c0044ae900a87d5f1a4e86a03205b94)
+
+### Linting
+
+Since all control statements are transformed via Babel, no require or import calls are needed. This in turn would lead to warnings or errors by ESLint about undefined variables.
+
+But fortunately you can use this [ESLint plugin for JSX Control Statements](https://github.com/vkbansal/eslint-plugin-jsx-control-statements) to lint your code.
+
+#### Installation
+
+Let’s install the ESLint plugin as a development dependency:
+
+```sh
+yarn add --dev eslint-plugin-jsx-control-statements
+```
+
+> commit: [Install eslint-plugin-jsx-control-statements package](https://github.com/rxseven/setup-react-app/commit/bfc22528b892dae9c814a918c97a01d8aa343d99)
+
+#### Configuration
+
+Open `.eslintrc` file and add the following configuration:
+
+```diff
+  {
+    "env": {
+      "browser": true,
+-     "jest/globals": true
++     "jest/globals": true,
++     "jsx-control-statements/jsx-control-statements": true
+    },
+-   "extends": ["react-app", "airbnb", "plugin:jest/recommended"],
++   "extends": [
++     "react-app",
++     "airbnb",
++     "plugin:jest/recommended",
++     "plugin:jsx-control-statements/recommended"
++   ],
+    ...
+-   "plugins": ["jest"],
++   "plugins": ["jest", "jsx-control-statements"],
+    "rules": {
+      ...
++     "jsx-control-statements/jsx-choose-not-empty": "warn",
++     "jsx-control-statements/jsx-for-require-each": "warn",
++     "jsx-control-statements/jsx-for-require-of": "warn",
++     "jsx-control-statements/jsx-if-require-condition": "warn",
++     "jsx-control-statements/jsx-otherwise-once-last": "warn",
++     "jsx-control-statements/jsx-use-if-tag": "warn",
++     "jsx-control-statements/jsx-when-require-condition": "warn",
++     "jsx-control-statements/jsx-jcs-no-undef": "warn",
+      ...
++     "react/jsx-no-undef": ["error", { "allowGlobals": true }],
+      ...
+    }
+  }
+```
+
+> commit: [Update ESLint configuration to support JSX control statements syntax](https://github.com/rxseven/setup-react-app/commit/e4491485988cbafe1a1e3d8d1edb07960080d4f6)
 
 [Back to top](#table-of-contents)
