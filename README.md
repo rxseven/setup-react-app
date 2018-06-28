@@ -13,6 +13,7 @@ React app made easy :sunglasses:
 - [Introduction](#introduction)
 - [Objective](#objective)
 - [What is Included](#what-is-included)
+- [Prerequisites](#prerequisites)
 
 #### Getting Started
 
@@ -81,5 +82,57 @@ Your project should have a good starting point with a nice development experienc
   - Standard CSS architecture with best practices.
   - A minimal boilerplate for React & Redux.
 - Detailed guidelines and live demo.
+
+[Back to top](#table-of-contents)
+
+## Prerequisites
+
+### Tools
+
+Before getting started, you are required to install the following tools on your machine:
+
+#### [Git](https://git-scm.com)
+
+Git is a version control system (VCS) for tracking changes in source files and coordinating work on those files among multiple people. It is primarily used for source code management (SCM) in software development.
+
+#### [Node Version Manager](https://github.com/creationix/nvm)
+
+nvm helps you manage and switch between different Node versions with ease. It provides a command line interface where you can install different versions with a single command, set a default, switch between them and much more.
+
+#### [Node.js](https://nodejs.org)
+
+Node.js is an open source, cross-platform JavaScript runtime environment. It uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.
+
+#### [Yarn](https://yarnpkg.com)
+
+Yarn is a package manager for JavaScript. It’s mainly a replacement for package management in your web projects, with a few features missing from the npm CLI.
+
+#### [Visual Studio Code](https://code.visualstudio.com)
+
+Visual Studio Code is an open-source code editor that can be run on multiple platforms. It provides support for debugging, built-in terminal and version control, syntax highlights, snippets, and much more.
+
+### Services
+
+Below is a list of helpful online services that can make your life easier:
+
+#### [GitHub](https://github.com)
+
+GitHub is a web-based hosting service for version control using Git. Using GitHub has numerous benefits including easier collaboration with colleagues and peers, ability to look back on previous versions, and tons of easy integration options.
+
+#### [Travis CI](https://travis-ci.org) \*
+
+Travis CI is a hosted, distributed continuous integration service used to build and test software projects hosted at GitHub.
+
+#### [Coveralls](https://coveralls.io) \*
+
+Coveralls is a hosted analysis tool, providing statistics about your code coverage.
+
+#### [Heroku](https://www.heroku.com) \*
+
+Heroku is a container-based cloud Platform as a Service (PaaS). The platform is elegant, flexible, and easy to use, offering developers the simplest path to getting their apps to market.
+
+\* optional, but will be required in latter sections.
+
+> The usage of those tools and services will be explained in following sections.
 
 [Back to top](#table-of-contents)
