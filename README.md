@@ -71,6 +71,7 @@ React app made easy :sunglasses:
 #### Appendix
 
 - [Changelog](#changelog)
+- [Acknowledgements](#acknowledgements)
 
 ## Introduction
 
@@ -7534,3 +7535,7 @@ For more information on setting up continuous deployment, see [this documentatio
 ## Changelog
 
 See [releases](https://github.com/rxseven/setup-react-app/releases).
+
+## Acknowledgements
+
+This project is developed and maintained by [Theerawat Pongsupawat](https://www.linkedin.com/in/pongsupawat/), frontend developer from Chiang Mai, Thailand.
