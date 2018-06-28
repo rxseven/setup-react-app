@@ -26,6 +26,7 @@ React app made easy :sunglasses:
 
 - [Adding Pre-commit Hooks](#adding-pre-commit-hooks)
 - [Adding React Hot Loader](#adding-react-hot-loader)
+- [Running JavaScript Linting](#running-javascript-linting)
 
 #### Ecosystem
 
@@ -1223,5 +1224,301 @@ Then, add the lines below to `src/components/core/App/index.jxs` file:
 ```
 
 > commit: [Setup React Hot Loader](https://github.com/rxseven/setup-react-app/commit/db81fd345df256f1f4c565bbfd429f58f30540aa)
+
+[Back to top](#table-of-contents)
+
+## Running JavaScript Linting
+
+Code linting is a form of static analysis that will find both code errors as well as highlight syntax not adhering to formatting styles. This means it can help us find problematic code before we commit to version control and more importantly before the code finds its way onto production.
+
+### Setup
+
+#### Installation
+
+Create React App ships with [ESLint](https://eslint.org) out of the box! there is no need to install any additional library separately.
+
+Here is a list of ESLint dependencies we got when create a new app with Create React App:
+
+**Core**
+
+```
+eslint
+```
+
+**Shareable configuration**
+
+```
+eslint-config-react-app
+```
+
+**Plugins**
+
+```
+eslint-plugin-flowtype
+eslint-plugin-import
+eslint-plugin-jsx-a11y
+eslint-plugin-react
+```
+
+#### Configuration
+
+In the project’s root directory, create a configuration file:
+
+```sh
+touch .eslintrc
+```
+
+> commit: [Create ESLint configuration](https://github.com/rxseven/setup-react-app/commit/cda31607c9f6a6f7ad89c0cba20155a1147333f3)
+
+Then, add the following configuration to the newly created file:
+
+```json
+{
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "parser": "babel-eslint"
+}
+```
+
+Open `package.json` file, cut `eslintConfig` property and its values:
+
+```diff
+  {
+-   "eslintConfig": {
+-     "extends": "react-app"
+-   }
+  }
+```
+
+In `.eslintrc` file, paste code snippets from a clipboard and remove `eslintConfig` key:
+
+```diff
+  {
+    "env": {...},
++   "extends": [
++     "react-app"
++    ],
+    "parser": "babel-eslint"
+  }
+```
+
+> commit: [Setup ESLint](https://github.com/rxseven/setup-react-app/commit/b74d24c0ab36d2436a5e0f9e906728c850ae6304)
+
+You may need to define `.eslintrc` as a `JSON` format to Visual Studio Code’s file association list. In `.vscode/settings.json` file, add the following line to `"files.associations"` section:
+
+```diff
+  {
+    // File associations to languages
+    "files.associations": {
+      ".babelrc": "json",
++     ".eslintrc": "json",
+      ".lintstagedrc": "json"
+    }
+  }
+```
+
+> commit: [Add ESLint configuration to VSCode's file association list](https://github.com/rxseven/setup-react-app/commit/c1c58d8e06971184465fd788348cd96be66d10d2)
+
+### Ignoring files
+
+ESLint supports excluding files from the linting process when ESLint operates on a directory.
+
+In the project’s root directory, let’s create an ignoring file:
+
+```sh
+touch .eslintignore
+```
+
+> commit: [Create ESLint ignoring file](https://github.com/rxseven/setup-react-app/commit/d8f9c8b0a81a4474e8bdabc446e6bc86f51da285)
+
+To exclude files from linting, add entries to a `.eslintignore` file:
+
+```
+/build
+/config
+/scripts
+/src/playground
+/src/registerServiceWorker.js
+```
+
+> commit: [Update ignoring list to exclude files from being linted by ESLint](https://github.com/rxseven/setup-react-app/commit/f2d6eaf84313823596198ad09ff9e765f8a6bdb7)
+
+### Using a shareable configuration
+
+Create React App ships with its shareable ESLint configuration called [eslint-config-react-app](https://www.npmjs.com/package/eslint-config-react-app) and it is awesome! But we be using another popular one from **Airbnb** which is [eslint-config-airbnb](https://www.npmjs.com/package/eslint-config-airbnb).
+
+#### Installation
+
+On the command line, install the configuration as a development dependency:
+
+```sh
+yarn add --dev eslint-config-airbnb
+```
+
+> commit: [Install eslint-config-airbnb package](https://github.com/rxseven/setup-react-app/commit/1bae339badbb9b9a0da295573e2fc6b8fac808d3)
+
+To list its peer dependencies and their versions, run the command below:
+
+```sh
+npm info "eslint-config-airbnb@latest" peerDependencies
+```
+
+Then, the output should look like this:
+
+```
+{
+  eslint: '^4.9.0',
+  'eslint-plugin-import': '^2.7.0',
+  'eslint-plugin-jsx-a11y': '^6.0.2',
+  'eslint-plugin-react': '^7.4.0'
+}
+```
+
+Since Create React App ships with all dependencies listed above (they are `eslint-config-react-app`’s peer dependencies), we will need to check only the minumum versions of dependencies it requires.
+
+If some are needed to be updated, run `yarn remove <dependency>` follow by `yarn add --dev <dependency>@<version>` for each listed items.
+
+You may need to update `eslint-plugin-jsx-a11y` package, let’s remove the old version first:
+
+```sh
+yarn remove eslint-plugin-jsx-a11y
+```
+
+Then, install the latest version as a development dependency:
+
+```sh
+yarn add --dev eslint-plugin-jsx-a11y
+```
+
+> commit: [Update eslint-plugin-jsx-a11y package to v6.0.3](https://github.com/rxseven/setup-react-app/commit/edae96c69341fb911acd76499740b4d05e2418cc)
+
+#### Configuration
+
+In `.eslintrc` file, add `airbnb` to `extends` section:
+
+```diff
+  {
+    "env": {...},
+-   "extends": ["react-app"],
++   "extends": ["react-app", "airbnb"],
+    "parser": "babel-eslint"
+  }
+```
+
+> Note: there is no need to add all peer dependencies to `plugins` section in `.eslintrc` file since they are already pre-configured in the shareable configuration.
+
+> commit: [Setup shareable Airbnb configuration for ESLint](https://github.com/rxseven/setup-react-app/commit/938db6ebf8bca5d33e9cb8558cf2bad9265b2c23)
+
+### Overriding linting rules
+
+In `.eslintrc` file, add the following `rules` section:
+
+```json
+{
+  "rules": {
+    "comma-dangle": ["error", "never"],
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "local",
+        "args": "none"
+      }
+    ],
+    "no-useless-escape": "off",
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "jsx-a11y/anchor-is-valid": [
+      "error",
+      {
+        "components": ["Link"],
+        "specialLink": ["to"]
+      }
+    ],
+    "jsx-a11y/href-no-hash": "off",
+    "jsx-a11y/label-has-for": "off",
+    "react/jsx-filename-extension": "off",
+    "react/no-string-refs": "off",
+    "react/prop-types": "off"
+  }
+}
+```
+
+> commit: [Override ESLint shareable rules](https://github.com/rxseven/setup-react-app/commit/3b6cef1af7c1dfbd69f6d71df435fb97fc9cb18b)
+
+### Displaying lint output in the editor
+
+We will be using [ESLint extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to automatically lint our JavaScript code in the editor.
+
+#### Installatation
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install vscode-eslint` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+#### Usage
+
+Head to the [extension’s documentation page](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and follow the instructions.
+
+### Running code linting through the CLI
+
+We will define scripts for running code linting against the entire project from the command line.
+
+#### Configuration
+
+Open `package.json` file and add the following scripts to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      "build": "node scripts/build.js",
++     "lint:script": "eslint src/**/*.{js,jsx}",
++     "lint:script:fix": "eslint --fix src/**/*.{js,jsx}",
+      "precommit": "lint-staged",
+      ...
+    }
+  }
+```
+
+> commit: [Add scripts for running code linting through the CLI](https://github.com/rxseven/setup-react-app/commit/659c164e0cc357b6589431dbaeee2cb3d8aa2cb8)
+
+#### Usage
+
+Run the following script to lint JavaScript code with ESLint through the CLI:
+
+```sh
+yarn lint:script
+```
+
+To automatically fix problems, run the following script instead:
+
+```sh
+yarn lint:script:fix
+```
+
+With `:fix` option, it instructs ESLint to try to fix as many issues as possible. The fixes are made to the actual files themselves and only the remaining unfixed issues are output. For more information, see [ESLint - Command Line Interface](https://eslint.org/docs/user-guide/command-line-interface#--fix).
+
+### Preventing linting violations from being committed
+
+To prevent invalid code from being committed to a repository, we need to setup a pre-commit hook to run ESLint against staged files that about to be committed.
+
+This pre-commit task will check (lint) JavaScript files that are being marked as "staged" via `git add` before committing valid code to a repository.
+
+In `.lintstagedrc` file, add the following code block:
+
+```diff
+  {
++   "src/**/*.{js,jsx}": [
++     "yarn lint:script:fix",
++     "git add"
++   ]
+  }
+```
+
+> Note: make sure you have [`yarn lint:script:fix`](#running-code-linting-through-the-cli) script defined beforehand.
+
+> commit: [Add pre-commit hook for running code linting against staged files](https://github.com/rxseven/setup-react-app/commit/64bfb18270544a7172ad2338fa616bb4eb327e79)
 
 [Back to top](#table-of-contents)
