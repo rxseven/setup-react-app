@@ -24,7 +24,7 @@ React app made easy :sunglasses:
 
 #### Development Workflow
 
-
+- [Adding Pre-commit Hooks](#adding-pre-commit-hooks)
 
 #### Ecosystem
 
@@ -1086,5 +1086,89 @@ yarn add classnames
 ```
 
 > commit: [Install classnames package](https://github.com/rxseven/setup-react-app/commit/2391c87733cad9b5aaaf1ecf691f936839ae4251)
+
+[Back to top](#table-of-contents)
+
+## Adding Pre-commit Hooks
+
+In this section we’ll look at Git hooks. These hooks are a feature of Git which furthers its extensibility by allowing developers to create event triggered scripts. For more information, see [Git Hooks](https://www.atlassian.com/git/tutorials/git-hooks).
+
+### What is a pre-commit
+
+The pre-commit hook is the ideal opportunity to run many of the checks that your CI server would run. This hook can be used to make sure certain checks pass before a commit can be considered worthy to be made to the remote repository.
+
+### Introducing Husky and Lint-staged
+
+[Husky](https://github.com/typicode/husky) is a really cool library that provides the ability to easily create Git commit hooks allowing you to run arbitrary scripts as a pre-commit sequence.
+
+[Lint-staged](https://github.com/okonet/lint-staged) on the other hand allows you to run arbitrary scripts against currently staged files. In Git, a file is being “staged” after you have “added” it to a commit. This allows you to slightly pick the files that will go into your next commit.
+
+Why we don’t just use Husky to run scripts? the key concept is that **we only want to run scripts against the list of files currently staged - nothing else**.
+
+#### Installation
+
+On the command line, let’s install Husky as a development dependency:
+
+```sh
+yarn add --dev husky
+```
+
+> commit: [Install husky package](https://github.com/rxseven/setup-react-app/commit/107194da1c5639c83b04673a8c52af5399510b40)
+
+Follow by Lint-staged:
+
+```sh
+yarn add --dev lint-staged
+```
+
+> commit: [Install lint-staged package](https://github.com/rxseven/setup-react-app/commit/ff79b1a5cebf14b55a851ec1a74d813173a0fc30)
+
+#### Configuration
+
+**Lint-staged**
+
+In the project’s root directory, let’s create a configuration file:
+
+```sh
+touch .lintstagedrc
+```
+
+Once the file has created, add the placeholder object below:
+
+```json
+{}
+```
+
+> commit: [Create Lint-staged configuration](https://github.com/rxseven/setup-react-app/commit/bece2ec2d2fee298eac69ec9bdd145cf384b13eb)
+
+You may need to define `.lintstagedrc` as a `JSON` format to Visual Studio Code’s file association list. In `.vscode/settings.json` file, add the following line to `"files.associations"` section:
+
+```diff
+  {
+    // File associations to languages
+    "files.associations": {
+-     ".babelrc": "json"
++     ".babelrc": "json",
++     ".lintstagedrc": "json"
+    }
+  }
+```
+
+> commit: [Add Lint-staged configuration to VSCode's file association list](https://github.com/rxseven/setup-react-app/commit/9c8c7095b4caf7ec5f347de28c0b9e892cd7beb7)
+
+**Husky**
+
+Open `package.json` file and add `precommit` script to `scripts` section:
+
+```diff
+  {
+    "build": "node scripts/build.js",
++   "precommit": "lint-staged",
+    "start": "node scripts/start.js",
+    "test": "node scripts/test.js --env=jsdom"
+  }
+```
+
+> commit: [Add Git pre-commit script](https://github.com/rxseven/setup-react-app/commit/ab5df518a7b2d6579a0eb2cc614f51baef8d81e4)
 
 [Back to top](#table-of-contents)
