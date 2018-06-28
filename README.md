@@ -20,6 +20,7 @@ React app made easy :sunglasses:
 
 - [Setting up a Project](#setting-up-a-project)
 - [Setting up a Code Editor](#setting-up-a-code-editor)
+- [Creating a React app](#creating-a-react-app)
 
 #### Development Workflow
 
@@ -433,5 +434,657 @@ For the time being, let’s disable the built-in tools through Visual Studio Cod
 ```
 
 > commit: [Disable built-in VSCode's code formatter and validator](https://github.com/rxseven/setup-react-app/commit/9f8b492bf98d1142a1788c1e26f0dc5bdc5347f2)
+
+[Back to top](#table-of-contents)
+
+## Creating a React App
+
+### Creating an app
+
+With [Create React App](https://github.com/facebook/create-react-app), you don’t need to install or configure tools like Webpack or Babel. They are preconfigured so that you can focus on the code. Just create a project, and you’re good to go.
+
+But to create a better development experience with best practices, in following sections we will customize Create React App to enhance our development workflow in an efficient way.
+
+First, let’s create a new app with Create React App by running a single command from the project’s root directory:
+
+```sh
+npx create-react-app setup-react-app
+```
+
+> Note: [npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher, with npx you don’t need to install [create-react-app](https://www.npmjs.com/package/create-react-app) globally.
+
+Now, your project structure should look like this:
+
+```
+setup-react-app
+├── .git
+├── .vscode
+│   ├── launch.json
+│   └── settings.json
+├── setup-react-app
+└── .nvmrc
+```
+
+We need to move all files and folders from `setup-react-app` (sub-folder) up one level. In the project’s root directory:
+
+```sh
+cd setup-react-app && mv {.[!.],}* ../ && cd .. && rmdir setup-react-app
+```
+
+> commit: [Create React app with CRA](https://github.com/rxseven/setup-react-app/commit/d3ad542c2d7c434bcc5f812aa5315011545255fc)
+
+### Extracting hidden configuration
+
+[Ejecting](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#npm-run-eject) lets you customize anything, but from that point on you have to maintain the configuration and scripts yourself.
+
+```sh
+yarn eject
+```
+
+This command will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them.
+
+After ejecting, these files and folders will be adding to your project:
+
+```diff
+  setup-react-app/
++   config/
++     jest/
++       cssTransform.js
++       fileTransform.js
++     env.js
++     paths.js
++     polyfills.js
++     webpack.config.dev.js
++     webpack.config.prod.js
++     webpackDevServer.config.js
++   scripts/
++     build.js
++     start.js
++     test.js
+```
+
+Also `package.json` file will be updating with the following changes:
+
+```diff
+  {
+    ...
+    ...
+    "dependencies": {
++     ...
+-     "react-scripts": "1.1.4"
++     ...
+    }
+    "scripts": {
+-     "start": "react-scripts start",
+-     "build": "react-scripts build",
+-     "test": "react-scripts test --env=jsdom",
+-     "eject": "react-scripts eject"
++     "start": "node scripts/start.js",
++     "build": "node scripts/build.js",
++     "test": "node scripts/test.js --env=jsdom"
+-   }
++   },
++   "jest": {...},
++   "babel": {...},
++   "eslintConfig": {...}
+  }
+```
+
+And these files **must** be checked into your repository.
+
+> commit: [Extract hidden configuration from CRA](https://github.com/rxseven/setup-react-app/commit/179b096702f9aa058d64bfa03476d8fd0c9487e0)
+
+Then, we need to update Yarn lockfile:
+
+```sh
+yarn install
+```
+
+> commit: [Update Yarn lockfile](https://github.com/rxseven/setup-react-app/commit/a9b06f5f94b38656a0b1a567d99af79ff98c6b56)
+
+### Configuring Babel
+
+To make `package.json` file clean and concise, we will be moving `babel` section to its own configuration file.
+
+In the project’s root directory, create a configuration file:
+
+```sh
+touch .babelrc
+```
+
+Open `package.json` file, cut `babel` property and its values:
+
+```diff
+  {
+-   "babel": {
+-     "presets": [
+-       "react-app"
+-     ]
+-   }
+  }
+```
+
+In `.babelrc` file, paste code snippets from a clipboard and remove `babel` key:
+
+```json
+{
+  "presets": ["react-app"]
+}
+```
+
+> commit: [Settup Babel](https://github.com/rxseven/setup-react-app/commit/9749411d0db91a5003c16ef3b3108c874b5c3549)
+
+You may need to define `.babelrc` as a `JSON` format to Visual Studio Code’s file association list. In `.vscode/settings.json` file, add the following configuration:
+
+```
+{
+  // File associations to languages
+  "files.associations": {
+    ".babelrc": "json"
+  }
+}
+```
+
+> commit: [Add Babel configuration to VSCode's file association list](https://github.com/rxseven/setup-react-app/commit/58e75b21be6a7e72c2c74720f94ff7bf6b4412c7)
+
+### Cleaning up app boilerplate
+
+Let’s remove these files generated by Create React App:
+
+```diff
+  setup-react-app
+    src
+-     App.css
+-     App.js
+-     App.test.js
+-     logo.svg
+-     index.css
+```
+
+In the project’s root directory, run the command below:
+
+```sh
+cd src && rm App.css App.js App.test.js logo.svg index.css
+```
+
+Since those files have been removed, now the app is broken, so we need to fix it by updating `src/index.js` file (project starting point) with the following changes:
+
+```diff
++ // Module dependencies
+  import React from 'react';
+  import ReactDOM from 'react-dom';
+- import './index.css';
+- import App from './App';
++
+  import registerServiceWorker from './registerServiceWorker';
+
++ // Render React element into the DOM
+- ReactDOM.render(<App />, document.getElementById('root'));
++ ReactDOM.render(<h1>Welcome to React</h1>, document.getElementById('root'));
++
++ // Service worker
+  registerServiceWorker();
+```
+
+Now, your neat folder structure should look like this:
+
+```
+setup-react-app
+├── node_modules
+├── public
+│   ├── favicon.ico
+│   ├── index.html
+│   └── manifest.json
+├── src
+│   ├── index.js
+│   └── registerServiceWorker.js
+├── .gitignore
+├── package.json
+├── README.md
+└── yarn.lock
+```
+
+> commit: [Clean up app boilerplate generated by CRA](https://github.com/rxseven/setup-react-app/commit/ba28a22c790314d598dfbaa3c246bd18bf5aea73)
+
+### Categorizing module dependencies
+
+Module dependencies for development and production listed in `package.json` file must be categorized as `devDependencies` and `dependencies` respectively:
+
+```json
+{
+  "dependencies": {
+    "chalk": "",
+    "dotenv": "",
+    "dotenv-expand": "",
+    "fs-extra": "",
+    "object-assign": "",
+    "promise": "",
+    "raf": "",
+    "react": "",
+    "react-dom": "",
+    "resolve": "",
+    "whatwg-fetch": ""
+  },
+  "devDependencies": {
+    "autoprefixer": "",
+    "babel-core": "",
+    "babel-eslint": "",
+    "babel-jest": "",
+    "babel-loader": "",
+    "babel-preset-react-app": "",
+    "babel-runtime": "",
+    "case-sensitive-paths-webpack-plugin": "",
+    "css-loader": "",
+    "eslint": "",
+    "eslint-config-react-app": "",
+    "eslint-loader": "",
+    "eslint-plugin-flowtype": "",
+    "eslint-plugin-import": "",
+    "eslint-plugin-jsx-a11y": "",
+    "eslint-plugin-react": "",
+    "extract-text-webpack-plugin": "",
+    "file-loader": "",
+    "html-webpack-plugin": "",
+    "jest": "",
+    "postcss-flexbugs-fixes": "",
+    "postcss-loader": "",
+    "react-dev-utils": "",
+    "style-loader": "",
+    "sw-precache-webpack-plugin": "",
+    "url-loader": "",
+    "webpack": "",
+    "webpack-dev-server": "",
+    "webpack-manifest-plugin": ""
+  }
+}
+```
+
+> commit: [Categorize module dependencies](https://github.com/rxseven/setup-react-app/commit/0bc7d17ffdcaf5a4b85be153f1254b9115db6c45)
+
+### Adding app information
+
+#### [package.json](https://docs.npmjs.com/files/package.json)
+
+In the project’s root directory, open `package.json` file and update with the changes below:
+
+```diff
+  {
+    ...
+    ...
++   "description": "React app made easy.",
+    "version": "0.1.0",
++   "license": "MIT",
++   "author": {
++     "name": "Theerawat Pongpawat",
++     "email": "rxseven.com@gmail.com",
++     "url": "http://www.rxseven.com"
++   },
++   "repository": {
++     "type": "git",
++     "url": "https://github.com/rxseven/setup-react-app.git"
++   },
+    "private": true,
++   "main": "index.js",
+    ...
+    ...
+  }
+```
+
+> commit: [Add app information to package.json file](https://github.com/rxseven/setup-react-app/commit/2464cdf290b218ec0f3e6d056c752670bc4aec37)
+
+> Important note on `homepage` field in `package.json`: see [deployment section](building-for-relative-paths).
+
+#### [manifest.json](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/manifest.json)
+
+Open `public/manifest.json` file and update with the changes below:
+
+```diff
+  {
+    "short_name": "React App",
+-   "name": "Create React App Sample",
++   "name": "Setup React App",
+    ...
+    ...
+  }
+```
+
+> commit: [Add app information to manifest.json file](https://github.com/rxseven/setup-react-app/commit/64fd94e559337bd910e8977f4d7595ddbbc98e4b)
+
+### Cleaning up scripts
+
+`scripts` section in `package.json` file also needs to be refactored. First, let’s reorder its list items alphabetically:
+
+```json
+{
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node scripts/start.js",
+    "test": "node scripts/test.js --env=jsdom"
+  }
+}
+```
+
+Then, move `scripts` section over dependency lists.
+
+> commit: [Reorder scripts in package.json alphabetically](https://github.com/rxseven/setup-react-app/commit/defe29af6979dcc0ca18ece9e4f2baf6642c9cd5)
+
+### Specifying the app title
+
+Open `public/index.html` file and update `<title>` element:
+
+```diff
+- <title>React App</title>
++ <title>Setup React App</title>
+```
+
+> commit: [Specify app title to HTML document](https://github.com/rxseven/setup-react-app/commit/0427072b09d2caadd840e0e3c9d33d7ad05bfe6d)
+
+### Changing the app favicon
+
+Replace `public/favicon.io` with new images:
+
+```
+16px @1x (Standard)
+24px
+32px @2x (Retina display)
+64px @4x
+```
+
+> commit: Change app favicon
+
+### Creating a scalable folder structure
+
+To create a scalable folder structure, in the project’s root directory, run a couple of commands below:
+
+```sh
+cd src
+mkdir components config constants dependencies helpers HOCs images screens tests
+cd components && mkdir common core && cd ..
+cd helpers && mkdir __tests__ && cd ..
+cd HOCs && mkdir common && cd ..
+cd images && mkdir common && cd ..
+cd screens && mkdir main && cd ..
+```
+
+Now, your folder structure should look like this:
+
+```
+src
+├── components
+│   ├── common
+│   └── core
+├── config
+├── constants
+├── dependencies
+├── helpers
+│   └── __tests__
+├── HOCs
+│   └── common
+├── images
+│   └── common
+├── screens
+│   └── main
+└── tests
+```
+
+### Changing file extension
+
+Essentially, `.js` should only ever be for files that use features of standard JavaScript - anything non-standard, like JSX, Flow, TypeScript, or early-stage proposals, needs a different extension. For convenience, we will be using `.jsx` with React components rather than `.js`. For more information, see [this discussion](https://github.com/airbnb/javascript/pull/985).
+
+First, we need to change the extension of the project starting point from `.js` to `.jsx` by running the following command:
+
+```js
+mv src/index.js src/index.jsx
+```
+
+Then, update the `appIndexJs` property in `config/paths.js` file to point to `src/index.jsx`:
+
+```diff
+  module.exports = {
+    ...
+-   appIndexJs: resolveApp('src/index.js'),
++   appIndexJs: resolveApp('src/index.jsx'),
+    ...
+  };
+```
+
+We also need to update `main` section in `package.json` file as the following:
+
+```diff
+  {
+    ...
+    "private": true,
+-   "main": "index.js",
++   "main": "index.jsx",
+    "dependencies": {
+    ...
+  }
+```
+
+> commit: [Change project starting point's file extension](https://github.com/rxseven/setup-react-app/commit/f835be099af24ffac84f1eb1034e361713dd0c43)
+
+### Creating a starting point component
+
+On the command line, create `App` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/App && cd src/components/core/App
+```
+
+Then, create a component file inside `App`:
+
+```sh
+touch index.jsx
+```
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// Module dependencies
+import React from 'react';
+
+// Component
+const App = () => <div>App component</div>;
+
+// Module exports
+export default App;
+```
+
+After that, import App component to the project starting point. To do that, open `src/index.jsx` file and update with the following changes:
+
+```diff
+  // Module dependencies
+  import ReactDOM from 'react-dom';
+  import React from 'react';
+
++ // Starting point component
++ import App from './components/core/App';
+
+  ...
+  ...
+
+  // Render React element into the DOM
+- ReactDOM.render(<h1>Welcome to React</h1>, root);
++ ReactDOM.render(<App />, root);
+```
+
+> commit: [Create App component](https://github.com/rxseven/setup-react-app/commit/2cde32a7475cb6d4ab7158d0a7310fd485e8d213)
+
+### Adding the dependency entry point
+
+On the command line, run the command below:
+
+```sh
+touch src/dependencies/index.js
+```
+
+Then, add the following import statement to `src/index.jsx` file:
+
+```diff
+  ...
+  import registerServiceWorker from 'registerServiceWorker';
++ import 'dependencies';
+```
+
+> commit: [Add dependency entry point (1)](https://github.com/rxseven/setup-react-app/commit/22418532a2842b78a55e27cc44da027b428fe0f8), [(2)](https://github.com/rxseven/setup-react-app/commit/5bba50c5ecb65ea9b9a256147fefbcd6378a5079)
+
+### Specifying root HTML element
+
+On the command line, create `html.js` file inside `elements` folder:
+
+```sh
+mkdir src/constants/elements && touch src/constants/elements/html.js
+```
+
+Inside `html.js` file, just export an empty object:
+
+```js
+export default {};
+```
+
+> commit: [Add JavaScript constants for specifying HTML elements](https://github.com/rxseven/setup-react-app/commit/4795d8718ba73aecf4649f55da0a0cc1adcedb56)
+
+Then, update `html.js` file with the following changes:
+
+```diff
+- export default {};
++ export default {
++   root: 'root'
++ };
+```
+
+Open `src/index.jsx` file and replace static `'html'` with JavaScript constant:
+
+```diff
++ // Constants
++ import HTML from './constants/elements/html';
+
+  // Render React element into the DOM
+- ReactDOM.render(<App />, document.getElementById('html'));
++ ReactDOM.render(<App />, document.getElementById(HTML.root));
+```
+
+> commit: [Specify root HTML element to the project starting point](https://github.com/rxseven/setup-react-app/commit/89edd0eb3e78561a765c4e26b88c87f4acd5afcd)
+
+### Adding an error handler
+
+Open `src/index.jsx` file and update with the following changes:
+
+```diff
+  ...
+  ...
+
++ // Initialize root HTML element
++ const root = document.getElementById(HTML.root);
++
++ // Validate root element
++ if (root == null) {
++   throw new Error('No root element found');
++ }
++
+  // Render React element into the DOM
+- ReactDOM.render(<App />, document.getElementById(HTML.root));
++ ReactDOM.render(<App />, root);
+
+  // Service worker
+  registerServiceWorker();
+```
+
+> commit: [Add error handler](https://github.com/rxseven/setup-react-app/commit/116884d39e10cd82919a24315cb3372c3079ecf9)
+
+#### Defining URLs variable
+
+In the project’s root directory, create a variable file inside `src/constants/router`:
+
+```sh
+mkdir src/constants/router && touch src/constants/router/urls.js
+```
+
+Then, add the remote repository URL to `repo` property:
+
+```js
+export default {
+  repo: 'rxseven/setup-react-app'
+};
+```
+
+> commit: [Add URLs variable (optional)](https://github.com/rxseven/setup-react-app/commit/02428fd463468927c7cc97b4cd5bb450e55a4548)
+
+### Adding the permanent environment variables
+
+Create **env** files in the project’s root directory by running a single command:
+
+```sh
+touch .env .env.development .env.production
+```
+
+> commit: [Add permanent environment variables](https://github.com/rxseven/setup-react-app/commit/ae9038616534d8dfe737eee274f2bc23126cc8b9)
+
+### Specify app URLs
+
+Open `.env.development` file and add the content below:
+
+```
+# Web application
+REACT_APP_WEB_URL=http://localhost:3000
+```
+
+> commit: [Specify app URL in development environment](https://github.com/rxseven/setup-react-app/commit/158655e08ced99e5fa89ef6d2cb3755fbf133b36)
+
+Open `.env.production` file and add the content below:
+
+```
+# Web application
+REACT_APP_WEB_URL=https://setup-react-app.herokuapp.com
+```
+
+> commit: [Specify app URL in production environment](https://github.com/rxseven/setup-react-app/commit/bfe5bbf209313ddbcf862de414d061ec86fe0f77)
+
+#### Running scripts across platforms
+
+To be able to run scripts that set and use environment variables across platforms, you may need a [cross-env](https://github.com/kentcdodds/cross-env) library.
+
+With **cross-env**, you can have a single command without worrying about setting or using the environment variable properly for the platform. Just set it like you would if it’s running on a POSIX system, and it will take care of setting it properly.
+
+Let’s install it as a development dependency:
+
+```sh
+yarn add --dev cross-env
+```
+
+> commit: [Install cross-env package](https://github.com/rxseven/setup-react-app/commit/a961b07b9df607200227166cff44cd969ea84764)
+
+#### Installing utility libraries
+
+You might come to the point to choose a JavaScript utility library that gives you more complex functionalities. You might even want to be more flexible when chaining these utility functions or even compose them dynamically into each other. That’s the point in time where you would introduce a utility library.
+
+My recommendations are three libraries, we will be using the following widespread JavaScript utility libraries throughout this project and all of them are required to be installed beforehand.
+
+[Lodash](https://lodash.com) - A modern JavaScript utility library delivering modularity, performance & extras.
+
+```sh
+yarn add lodash
+```
+
+> commit: [Install lodash package](https://github.com/rxseven/setup-react-app/commit/404f5a0b95205dafb255f20ec3cbb6be89ae7773)
+
+[Ramda](https://ramdajs.com) - A practical functional library for JavaScript programmers.
+
+
+When you move towards [functional programming](https://medium.com/javascript-scene/master-the-javascript-interview-what-is-functional-programming-7f218c68b3a0) in JavaScript, there is no way around this utility library. Even though Lodash comes with its own functional programming derivate (which is [Lodash FP](https://github.com/lodash/lodash/wiki/FP-Guide)), I would recommend using Ramda when dealing with functional programming.
+
+```sh
+yarn add ramda
+```
+
+> commit: [Install ramda package](https://github.com/rxseven/setup-react-app/commit/bd2f0b5c15c8833917ce0d8697d6d9a92472cc6c)
+
+[Classnames](https://github.com/JedWatson/classnames) - A simple JavaScript utility for conditionally joining CSS class names together.
+
+```sh
+yarn add classnames
+```
+
+> commit: [Install classnames package](https://github.com/rxseven/setup-react-app/commit/2391c87733cad9b5aaaf1ecf691f936839ae4251)
 
 [Back to top](#table-of-contents)
