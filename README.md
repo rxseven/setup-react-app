@@ -54,6 +54,7 @@ React app made easy :sunglasses:
 - [Adding Common Components](#adding-common-components)
 - [Adding Core Components](#adding-core-components)
 - [Adding Main Screens](#adding-main-screens)
+- [Adding API Services](#adding-api-services)
 
 #### Enhancement
 
@@ -6590,5 +6591,76 @@ Open `src/screens/main/Home/index.jsx` and add a `404` link:
 ```
 
 > commit: [Add navigation link to 404 screen](https://github.com/rxseven/setup-react-app/commit/7761af93e744eca99462940097892d17d4b67a24)
+
+[Back to top](#table-of-contents)
+
+## Adding API Services
+
+### Setting up environment variables
+
+The only one thing we need to do is to define a placeholder to the API’s base URL.
+
+For **development**, add the following lines to `.env.development` file:
+
+```diff
++ # API
++ REACT_APP_API_URL=null
++
+  # Web application
+  REACT_APP_WEB_URL=http://localhost:3000
+```
+
+> commit: [Define API's base URL placeholder in development environment](https://github.com/rxseven/setup-react-app/commit/cebc11a72205e9fd78ba9ef0d2c6d777c9ad33dd)
+
+For **production**, add the following lines to `.env.production` file:
+
+```diff
++ # API
++ REACT_APP_API_URL=null
++
+  # Web application
+  REACT_APP_WEB_URL=https://setup-react-app.herokuapp.com
+```
+
+> commit: [Define API's base URL placeholder in production environment](https://github.com/rxseven/setup-react-app/commit/1222ef1be567ef39cbabfe2c7ab8ac313b4ff0fc)
+
+### Adding an API configuration
+
+From the project’s root directory, run the following command to create a configuration file:
+
+```sh
+touch src/config/api.js
+```
+
+Then, add the configuration below to the newly created file:
+
+```js
+export default {
+  url: process.env.REACT_APP_API_URL,
+  endpoints: {}
+};
+```
+
+> commit: [Add API configuration](https://github.com/rxseven/setup-react-app/commit/15e3de372d7a29642e853813b79f5d7f216efc25)
+
+### Installing Promise based HTTP library
+
+#### Introducing Axios
+
+[Axios](https://github.com/axios/axios) is a very popular Promise based HTTP library for JavaScript that runs on both the client and the server. With Axios it’s easy to make an asynchronous HTTP request to RESTful API endpoints and perform CRUD operations.
+
+On the command line, let’s install Axios with these commands:
+
+```sh
+yarn add axios
+```
+
+> commit: [Install axios package](https://github.com/rxseven/setup-react-app/commit/68349d29cb922b08386a8ae39cc482cb1256d6a1)
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/e6b3545062d1caf8b93502859a2a3b938c0ee22e)
 
 [Back to top](#table-of-contents)
