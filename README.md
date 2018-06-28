@@ -28,6 +28,7 @@ React app made easy :sunglasses:
 - [Adding React Hot Loader](#adding-react-hot-loader)
 - [Running JavaScript Linting](#running-javascript-linting)
 - [Running Stylesheet Linting](#running-stylesheet-linting)
+- [Running Static Type Checking](#running-static-type-checking)
 
 #### Ecosystem
 
@@ -1742,5 +1743,336 @@ In `.lintstagedrc` file, add the following code block:
 > Note: make sure you have [`yarn lint:stylesheet`](#running-stylesheet-linting-through-the-cli) script defined beforehand.
 
 > commit: [Add pre-commit hook for running stylesheet linting against staged files](https://github.com/rxseven/setup-react-app/commit/428df764483faaecaae483356a68158e02f141b6)
+
+[Back to top](#table-of-contents)
+
+## Running Static Type Checking
+
+JavaScript is awesome! however, its lack of static typing can be a real pain for developers, bugs only appear at runtime, are hard to find and code refactoring is a real challenge.
+
+This is where static type checkers such as TypeScript and Flow come into play with their main features being:
+
+- Helping to catch errors early, close to the root cause and at buildtime.
+- Improving code readability and maintainability.
+
+[Flow](https://flow.org) is a static type checker for your JavaScript code that helps you write code with fewer bugs. It does a lot of work to make you more productive. Making you code faster, smarter, more confidently, and to a bigger scale.
+
+### Setup
+
+#### Installation
+
+Recent versions of Flow work with Create React App projects out of the box. All we need to do is install Flow and create a configuration file.
+
+We need to install Flow binary as a development dependency:
+
+```sh
+yarn add --dev flow-bin
+```
+
+> Note: there is no need to install [babel-preset-flow](https://github.com/babel/babel/tree/master/packages/babel-preset-flow) since Create React App already supports Flow by default.
+
+> commit: [Install flow-bin package](https://github.com/rxseven/setup-react-app/commit/67e2db815188e76aebfc33dfe3605000b52e8ebd)
+
+#### Configuration
+
+First, we need to prepare a project for Flow by running the following command to initialize Flow configuration:
+
+```sh
+yarn flow init
+```
+
+The command will then create `.flowconfig` file inside the project’s root directory with default options as follows:
+
+```
+[ignore]
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+
+[strict]
+```
+
+Next, we need to create a script for running Flow within our project, open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+-     "test": "node scripts/test.js --env=jsdom"
++     "test": "node scripts/test.js --env=jsdom",
++     "type": "flow"
+    }
+  }
+```
+
+> commit: [Setup Flow](https://github.com/rxseven/setup-react-app/commit/087b15aba3620dd7f0198802d21c2d486b3177b1)
+
+### Ignoring files
+
+Flow needs to know which files to read and watch for changes. This set of files is determined by taking all included files and excluding all the ignored files.
+
+The `[ignore]` section in a `.flowconfig` file tells Flow to ignore files matching the specified regular expressions when type checking your code. By default, nothing is ignored.
+
+You may need to configure Flow to ignore certain files especially files in `node_modules`:
+
+```diff
+  [ignore]
++ .*/node_modules/.*
+```
+
+> commit: [Update ignoring list to exclude files from being checked by Flow](https://github.com/rxseven/setup-react-app/commit/f1dc867e7d667b5d4905f26e4ecd72253869e2b3)
+
+### Specifying file extensions
+
+By default, Flow will look for files with the extensions `.js`, `.jsx`, `.mjs` and `.json`. You may need to override this behavior with this option.
+
+In `.flowconfig` file, add a list of file extensions to `[options]` section as follows:
+
+```diff
+  [options]
++ module.file_ext=.css
++ module.file_ext=.js
++ module.file_ext=.json
++ module.file_ext=.jsx
++ module.file_ext=.mjs
++ module.file_ext=.scss
+```
+
+> commit: [Override Flow's file extension list](https://github.com/rxseven/setup-react-app/commit/1b86179bb0ccbb7cf4c69724ed362f9e52967022)
+
+### Library Definitions
+
+When you start a JavaScript project (including React obviously) and use Flow for static type checking, you likely want to use some third-party libraries that were not written with Flow and they are absolutely not under the control of the project.
+
+That means a project using Flow for static type checking may need to reference outside code that either doesn’t have type information or doesn’t have accurate and/or precise type information. By default, Flow will just ignore these libraries leaving them untyped.
+
+In order to handle this, Flow supports the concept of a **“library definition”** or **“libdef”** which allow you to describe the interface of a module or library separate from the implementation of that module/library. For more information on library definitions, see [this documentation](https://flow.org/en/docs/libdefs).
+
+#### Introducing Flow-typed
+
+[Flow-typed](https://github.com/flowtype/flow-typed) is a repository of third-party library interface definitions for use with Flow. It is a collection of high-quality library definitions, tests to ensure that definitions remain high quality, and tooling to make it as easy as possible to import them into your project.
+
+#### Installation
+
+Let’s install the CLI tool on the command line as a development dependency:
+
+```sh
+yarn add --dev flow-typed
+```
+
+> commit: [Install flow-typed package](https://github.com/rxseven/setup-react-app/commit/2505980e69dd15c0b83042b55e6457bb7e3bca66)
+
+#### Configuration
+
+We will need to define script for running `flow-typed install` on the command line. To do this, open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+-     "type": "flow"
++     "type": "flow",
++     "type:install": "flow-typed install"
+    }
+  }
+```
+
+> commit: [Add script for installing library definitions](https://github.com/rxseven/setup-react-app/commit/1c7ec57468f648de059a8dea823e9cd11cd2f045)
+
+#### Usage
+
+All you have to do when you add one or more new dependencies to your project is run the script on the command line. This will search the libdef repository and download all the libdefs that are relevant for your project and install them for you.
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/2a82727369de4416bbf5edfca94c7cb7a3dcffc7)
+
+### Using Flow extension for code editor
+
+We will be using [Flow for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=flowtype.flow-for-vscode) to automatically check our JavaScript in the editor.
+
+#### Installatation
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install flowtype.flow-for-vscode` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+#### Configuration
+
+We will be using Flow for static type checking and ESLint for JavaScript linting rather than the editor’s built-in JavaScript & TypeScript validators.
+
+To disable the editor’s built-in tools, we need to add the following configuration to `.vscode/settings.json` file:
+
+```diff
+  {
+    // Disable built-in code formatter and validator
+    "editor.formatOnSave": false,
+    "javascript.format.enable": false,
+-   "javascript.validate.enable": false,
+
+    ...
+    ...
+
++   // Flow and ESLint
++   // Use Flow for static type checking and ESLint for JavaScript linting
++   // rather than built-in JavaScript & TypeScript validation.
++   "javascript.validate.enable": false
+  }
+```
+
+We also need to configure Visual Studio Code to run Flow binary from the project’s dependencies, which is from `node_modules`:
+
+```diff
+  {
+    ...
+    ...
+
+    // File associations to languages
+-   "files.associations": {...}
++   "files.associations": {...},
++
++   // Flow
++   // Run Flow from local Node modules.
++   "flow.useNPMPackagedFlow": true
+
+    ...
+    ...
+  }
+```
+
+> commit: [Setup Flow extension for VSCode](https://github.com/rxseven/setup-react-app/commit/d75a8984ac773e52ab5c834f964ab0bdc4fc0554)
+
+#### Usage
+
+Head to the [extension’s documentation page](https://marketplace.visualstudio.com/items?itemName=flowtype.flow-for-vscode) and follow the instructions.
+
+### Linting
+
+There is no need to install [eslint-plugin-flowtype](https://github.com/gajus/eslint-plugin-flowtype) plugin separately, Flow type linting rules for ESLint work with Create React App projects out of the box!
+
+> Note: ESLint works with `babel-eslint@8.1.1` and higher, please do double check your current version in `package.json` file. For more information, see [this issue](https://github.com/eslint/eslint/issues/9767).
+
+In case you need to update a new version of [babel-eslint](https://github.com/babel/babel-eslint) library, you need to remove the current version from the project’s development dependency before updating to a new version:
+
+```sh
+yarn remove babel-eslint
+```
+
+Then, install a new version:
+
+```sh
+yarn add --dev babel-eslint@8.2.3
+```
+
+> commit: [Update babel-eslint package to v8.2.3](https://github.com/rxseven/setup-react-app/commit/1a95e01e90cab141546e853d3d6168ca275c29c5)
+
+### Running type checking through the CLI
+
+We will define a script for running type checking through the entire project from the command line.
+
+#### Configuration
+
+Open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "type": "flow",
++     "type:check": "flow check",
+      "type:install: "flow-typed install"
+    }
+  }
+```
+
+> commit: [Add script for running type checking through the CLI](https://github.com/rxseven/setup-react-app/commit/c6ee7a26258122f39580dd13402205c2a648ac79)
+
+#### Usage
+
+Run the command below to run a full check and print the results through the CLI:
+
+```sh
+yarn type:check
+```
+
+### Preventing type violations from being committed
+
+To prevent invalid code from being committed to a repository, we need to setup a pre-commit hook to run type checking against staged files that about to be committed.
+
+This pre-commit task will run type checking JavaScript files that are being marked as "staged" via `git add` before committing valid code to a repository.
+
+First, open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "type:check": "flow check",
++     "type:check:focus": "flow focus-check",
+      "type:install: "flow-typed install"
+    }
+  }
+```
+
+Then, in `.lintstagedrc` file, add the following line:
+
+```diff
+  {
+    "src/**/*.{js,jsx}": [
+      "yarn lint:script:fix",
++     "yarn type:check:focus",
+      "git add"
+    ]
+  }
+```
+
+> commit: [Add pre-commit hook for running type checking against staged files](https://github.com/rxseven/setup-react-app/commit/7d11964b38ea1cb5adadac9015bfcb2fe5979113)
+
+### Applying type checking
+
+You may need to apply type checking to the project starting point and App component.
+
+#### Project startin point
+
+Open `src/index.jsx` file and add the content below:
+
+```diff
++ // @flow
+  ...
+  ...
+```
+
+> commit: [Add type checking to the project starting point](https://github.com/rxseven/setup-react-app/commit/15e50d77d54f3b429404d5d99d152c24945e2ce6)
+
+#### App component
+
+Open `src/components/core/App/index.jsx` file and add the content below:
+
+```diff
++ // @flow
+  // Module dependencies
+- import React from 'react';
++ import * as React from 'react';
+  import { hot } from 'react-hot-loader';
+
++ // Types
++ type Return = React.Node;
++
+  // Component
+- const App = () => <div>App component</div>;
++ const App = (): Return => <div>App component</div>;
+
+  // Module exports
+  export default hot(module)(App);
+```
+
+> commit: [Add type checking to App component](https://github.com/rxseven/setup-react-app/commit/e8bcd812577fd73ec39955bfd98a4b837c4bd08d)
 
 [Back to top](#table-of-contents)
