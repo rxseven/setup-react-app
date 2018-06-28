@@ -60,6 +60,7 @@ React app made easy :sunglasses:
 #### Enhancement
 
 - [Analyzing the Bundle Size](#analyzing-the-bundle-size)
+- [Code Splitting](#code-splitting)
 
 #### Deployment & Automated Tasks
 
@@ -6768,5 +6769,354 @@ yarn analyze
 ```
 
 Then, Source Map Explorer will launch your default browser automatically with the result of your bundle.
+
+[Back to top](#table-of-contents)
+
+## Code Splitting
+
+#### Problem
+
+So you’ve got your React app, you’re bundling it with Create React App (using Webpack obviously) or [Buildpacks](https://devcenter.heroku.com/articles/buildpacks) (with Heroku for instance), and its performance are going smooth. But then one day you notice your bundle (package) is getting so big that it’s slowing performance down.
+
+Bundling is great, but as your app grows, your bundle size will grow too. Especially if you are including large third-party libraries. You need to keep an eye on the code you are including in your bundle so that you don’t accidentally make it so large that your app takes a long time to load.
+
+#### Solution
+
+To avoid winding up with a large bundle, it’s time to start code-splitting your app! [Code-Splitting](https://webpack.js.org/guides/code-splitting/) is a feature supported by module bundlers like Webpack and Browserify which can take one large bundle containing your entire app, and splitting them up into multiple smaller bundles (chunks) which contain separate parts of your app.
+
+Code-splitting your app can help you “lazy-load” just the things that are currently needed by the user, which can dramatically improve the performance of your app. You’ve avoided loading code that the user may never need and reduced the amount of code needed during the initial load.
+
+The best way to introduce code-splitting into your app is through the dynamic ES6 `import()` syntax.
+
+#### Installation
+
+We will be using a small library called [react-loadable](https://github.com/jamiebuilds/react-loadable) to make our life easier. React Loadable is a higher order component for loading components with dynamic imports. It wraps dynamic imports in a nice, React-friendly API for introducing code-splitting into your app at a given component.
+
+Let’s install the library:
+
+```sh
+yarn add react-loadable
+```
+
+> commit: [Install react-loadable package](https://github.com/rxseven/setup-react-app/commit/0da5005d3a27850dd42725db4bf5178db124c85f)
+
+We also need to install [react-loadable-visibility](https://github.com/stratiformltd/react-loadable-visibility) library, a wrapper around React Loadable to load elements that are visible on the page:
+
+```sh
+yarn add react-loadable-visibility
+```
+
+> commit: [Install react-loadable-visibility package](https://github.com/rxseven/setup-react-app/commit/86b572e6bdd094e11571662d7f739a4c2bde6aa5)
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/2afde3f958db07a3503f30cfca95169e1ba36773)
+
+### Creating a great "Loading..." component
+
+Rendering just a static "Loading..." message doesn’t communicate enough information to the user. We also need to think about errors, timeouts..., and making it a nice experience.
+
+#### Helper function to work with window object
+
+First, let’s create a helper function to work with window object by opening `src/helpers/utilities.js` file and add the following function:
+
+```diff
+  // @flow
+
+  // Deley
+- // eslint-disable-next-line
+  export const delay = (callback: Function, duration: number) => {
+    setTimeout(() => {
+      callback();
+    }, duration);
+  };
+
++ // Reload webpage
++ export const reload = () => {
++   window.location.reload();
++ };
+```
+
+> commit: [Add helper function to reload webpage](https://github.com/rxseven/setup-react-app/commit/beade8f8eebc083e5b10482c63d8ac280068a0da)
+
+#### Loader component
+
+On the command line, create `Loader` folder inside `src/components/common`:
+
+```sh
+mkdir src/components/common/Loader
+```
+
+Then, create a component along with its test file and stylesheet inside `Loader`:
+
+```sh
+cd src/components/common/Loader
+touch index.jsx index.test.js styles.scss
+```
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import Layout from 'components/common/Layout';
+import Spinner from 'components/common/Spinner';
+import { reload } from 'helpers/utilities';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Props = {
+  error: any,
+  pastDelay: boolean,
+  timedOut: boolean
+};
+type Return = React.Node;
+
+// Wrapper
+const Wrapper = ({ children }: { children: React.Node }): Return => (
+  <Layout size="col-md-8 col-lg-6">{children}</Layout>
+);
+
+// Component
+const Loader = (props: Props): Return => {
+  // When the loader has errored
+  if (props.error) {
+    return (
+      <Wrapper>
+        <div className="card">
+          <div className="card-header">Sorry</div>
+          <div className="card-body">
+            <p className="card-text message">Something went wrong, please reload a webpage.</p>
+            <button className="btn btn-primary" onClick={() => reload()}>
+              Reload
+            </button>
+          </div>
+        </div>
+      </Wrapper>
+    );
+  }
+
+  // When the loader has taken longer than the timeout
+  if (props.timedOut) {
+    return (
+      <Wrapper>
+        <Spinner />
+        <div styleName="timeout">
+          <p className="message">Please take a moment</p>
+        </div>
+      </Wrapper>
+    );
+  }
+
+  // When the loader has taken longer than the delay
+  if (props.pastDelay) {
+    return (
+      <Wrapper>
+        <Spinner />
+      </Wrapper>
+    );
+  }
+
+  // When the loader has just started
+  return null;
+};
+
+// Module exports
+export default Loader;
+export { Wrapper };
+```
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Spinner from 'components/common/Spinner';
+import Loader, { Wrapper } from './index';
+
+// Tests
+describe('components/common/Loader', () => {
+  it('should render nothing', () => {
+    // Shallow rendering
+    const wrapper = shallow(<Loader />);
+
+    // Assertions
+    expect(wrapper.get(0)).toBeNull();
+  });
+
+  it('should accept "error" prop', () => {
+    // Mock data
+    const data = true;
+    const message = 'Something went wrong, please reload a webpage.';
+
+    // Shallow rendering
+    const wrapper = shallow(<Loader error={data} />);
+
+    // Assertions
+    expect(wrapper.find('.message').text()).toEqual(message);
+  });
+
+  it('should accept "timedOut" prop', () => {
+    // Mock data
+    const data = true;
+    const message = 'Please take a moment';
+
+    // Shallow rendering
+    const wrapper = shallow(<Loader timedOut={data} />);
+
+    // Assertions
+    expect(wrapper.find(Spinner)).toHaveLength(1);
+    expect(wrapper.find('.message').text()).toEqual(message);
+  });
+
+  it('should accept "pastDelay" prop', () => {
+    // Mock data
+    const data = true;
+
+    // Shallow rendering
+    const wrapper = shallow(<Loader pastDelay={data} />);
+
+    // Assertions
+    expect(wrapper.find(Spinner)).toHaveLength(1);
+  });
+
+  it('should reload a web page when a button is clicked', () => {
+    // Mock data and functions
+    const data = true;
+    window.location.reload = jest.fn();
+
+    // Shallow rendering
+    const wrapper = shallow(<Loader error={data} />);
+
+    // Simulate user interaction
+    wrapper
+      .find('button')
+      .at(0)
+      .simulate('click');
+
+    // Assertions
+    expect(window.location.reload).toHaveBeenCalled();
+  });
+});
+
+describe('components/common/Loader.Wrapper', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Wrapper>{children}</Wrapper>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+Let’s add a minimal amount of styles to the component as below:
+
+```scss
+// Global styles
+@import '../../../styles/base/settings';
+
+.timeout {
+  color: #6c757d;
+  font-size: 0.85rem;
+  padding-top: 1rem;
+}
+```
+
+> commit: [Create Loader component](https://github.com/rxseven/setup-react-app/commit/b57242bf7bc312fb2b3395fa89224a4ce7570fed)
+
+#### With loadable HOC
+
+On the command line, create `withLoadable` folder inside `src/HOCs/common`:
+
+```sh
+mkdir src/HOCs/common/withLoadable
+```
+
+Then, create a component along with its test file inside `Loader`:
+
+```sh
+cd src/HOCs/common/withLoadable
+touch index.jsx index.test.js
+```
+
+To create a component, add the content below to `index.jsx` file:
+
+```js
+// @flow
+// Module dependencies
+import * as React from 'react';
+import LoadableVisibility from 'react-loadable-visibility/react-loadable';
+
+import Loader from 'components/common/Loader';
+
+// Types
+type Props = Function;
+type Return = React.Node;
+
+// Component
+const withLoadable = (loader: Props): Return =>
+  LoadableVisibility({
+    delay: 200,
+    loader,
+    loading: Loader,
+    timeout: 10000
+  });
+
+// Module exports
+export default withLoadable;
+```
+
+You may need to add tests to `index.test.js` file, the following is a simple “smoke test” verifying that a component renders without throwing:
+
+```js
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import withLoadable from './index';
+
+// Tests
+describe('HOCs/common/withLoadable', () => {
+  it('should render without crashing', () => {
+    shallow(<withLoadable />);
+  });
+});
+```
+
+> commit: [Create withLoadable HOC](https://github.com/rxseven/setup-react-app/commit/b5b5d95880e9de9f4c6f6afd6ffed723c2ea65c0)
+
+### Route-based code splitting
+
+A good place to introduce code-splitting is to break your app into separate routes and load each one asynchronously because most users are used to page transitions taking some amount of time to load.
+
+Open `src/components/core/Routes/index.jsx` file and update with the following changes:
+
+```diff
++ import withLoadable from 'HOCs/common/withLoadable';
+
+  ...
+
+  // Screens
+- import Home from 'screens/main/Home';
+- import NotFound from 'screens/main/404';
++ const Home = withLoadable(() => import('screens/main/Home'));
++ const NotFound = withLoadable(() => import('screens/main/404'));
+```
+
+> commit: [Refactor Routes component with route-based code-splitting](https://github.com/rxseven/setup-react-app/commit/dc7f69e766c7191a4ad8c4bc09d72c61a78b404d)
 
 [Back to top](#table-of-contents)
