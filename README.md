@@ -59,7 +59,7 @@ React app made easy :sunglasses:
 
 #### Enhancement
 
-
+- [Analyzing the Bundle Size](#analyzing-the-bundle-size)
 
 #### Deployment & Automated Tasks
 
@@ -6714,5 +6714,59 @@ To do that, open `src/components/core/App/index.jsx` file and update with the co
 ```
 
 > commit: [Add app skeleton](https://github.com/rxseven/setup-react-app/commit/77db3bfa516fe75a80fbab652717d6649241e35f)
+
+[Back to top](#table-of-contents)
+
+## Analyzing the Bundle Size
+
+[Source Map Explorer](https://github.com/danvk/source-map-explorer) analyzes JavaScript (or Sass) bundles using the source maps. It determines which file each byte in your build came from. It shows you a treemap visualization to help you understand where code bloat is coming from.
+
+To add Source Map Explorer to you project, follow these steps:
+
+#### Installation
+
+```sh
+yarn add source-map-explorer
+```
+
+> commit: [Install source-map-explorer package](https://github.com/rxseven/setup-react-app/commit/6e7e294f220c5c79989981140e5be367b9aa2708)
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/e13aff8981630b352e5e93b9b6c624d82de1d4ff)
+
+#### Configuration
+
+In `package.json` file, add the following line to `scripts` section:
+
+```diff
+  {
+    "scripts": {
++     "analyze": "source-map-explorer build/static/js/main.*",
+      "build": "node scripts/build.js",
+      ...
+    }
+  }
+```
+
+> commit: [Add script for analyzing the bundle size](https://github.com/rxseven/setup-react-app/commit/d9b5d889fb843d2f34b7baa8ed6c4416ee466fa7)
+
+#### Usage
+
+To analyze the bundle size, run the production build command:
+
+```sh
+yarn build
+```
+
+And run the analyze script:
+
+```sh
+yarn analyze
+```
+
+Then, Source Map Explorer will launch your default browser automatically with the result of your bundle.
 
 [Back to top](#table-of-contents)
