@@ -29,6 +29,7 @@ React app made easy :sunglasses:
 - [Running JavaScript Linting](#running-javascript-linting)
 - [Running Stylesheet Linting](#running-stylesheet-linting)
 - [Running Static Type Checking](#running-static-type-checking)
+- [Running Tests](#running-tests)
 
 #### Ecosystem
 
@@ -2074,5 +2075,410 @@ Open `src/components/core/App/index.jsx` file and add the content below:
 ```
 
 > commit: [Add type checking to App component](https://github.com/rxseven/setup-react-app/commit/e8bcd812577fd73ec39955bfd98a4b837c4bd08d)
+
+[Back to top](#table-of-contents)
+
+## Running Tests
+
+Writing tests is an essential part of software development to ensure a robust application. Tests enable you to automatically verify that your application is working on a certain level. The certain level depends on the quality, quantity (coverage) and type of your tests (unit tests, integration tests, end-to-end tests).
+
+This section will guide you through the steps necessary to setup testing tools in Create React App from the ground up.
+
+### Configuring Jest
+
+[Jest](https://facebook.github.io/jest/) is a delightful JavaScript test framework running on Node.js. It is the official testing library by Facebook and it is used by Facebook to test all JavaScript code including React applications. Jest introduced the so called snapshot tests which can be used perfectly as supplement to your React unit and integration tests with [Enzyme](https://github.com/airbnb/enzyme).
+
+#### Installation
+
+Jest works out of the box with Create React App, there is no need to install any additional library separately. But there are some small changes we need to tweak to suit our preferences.
+
+#### Configuration
+
+We will define Jest configuration in `jest.config.json` file rather than in `package.json` file (default).
+
+On the command line, create a configuration file in the project’s root directory:
+
+```sh
+touch jest.config.json
+```
+
+Open `package.json` file, cut `jest` property and its values:
+
+```diff
+  {
+-   "jest": {...}
+  }
+```
+
+Sort those configuration properties alphabetically, remove `jest` key, and paste it in `jest.config.json` file:
+
+```json
+{
+  "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+  "moduleFileExtensions": [
+    "web.js",
+    "js",
+    "json",
+    "web.jsx",
+    "jsx",
+    "node",
+    "mjs"
+  ],
+  "moduleNameMapper": {
+    "^react-native$": "react-native-web"
+  },
+  "setupFiles": ["<rootDir>/config/polyfills.js"],
+  "testEnvironment": "node",
+  "testMatch": [
+    "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
+    "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
+  ],
+  "testURL": "http://localhost",
+  "transform": {
+    "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
+    "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+    "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+  },
+  "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"]
+}
+```
+
+In order to tell Jest to use your configuration file for the test environment, in `package.json` file update the following `test` script with:
+
+```diff
+- "test": "node scripts/test.js --env=jsdom"
++ "test": "node scripts/test.js --env=jsdom --config jest.config.json"
+```
+
+> commit: [Setup Jest](https://github.com/rxseven/setup-react-app/commit/05faf4387169ad4a6fb4566b6950152d514bf6ad)
+
+#### Ignoring paths
+
+`coveragePathIgnorePatterns` property is an array of regexp pattern strings that are matched against all file paths before executing the test. If the file path matches any of the patterns, coverage information will be skipped. For more information on coverage path ignoring patterns, see [Configuring Jest](https://facebook.github.io/jest/docs/en/configuration.html#coveragepathignorepatterns-array-string).
+
+We will need to configure Jest to ignore the following paths when running code coverage:
+
+```diff
+  {
+    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
++   "coveragePathIgnorePatterns": [
++     "<rootDir>/build/",
++     "<rootDir>/config/",
++     "<rootDir>/node_modules/",
++     "<rootDir>/src/config/",
++     "<rootDir>/src/constants/",
++     "<rootDir>/src/dependencies/",
++     "<rootDir>/src/index.jsx",
++     "<rootDir>/src/registerServiceWorker.js"
++   ],
+    ...
+    ...
+  }
+```
+
+> commit: [Add code coverage ignoring paths](https://github.com/rxseven/setup-react-app/commit/7511cab9c9f78464c8446472e7bbbdd3f8d74ac6)
+
+### Configuring Enzyme
+
+[Enzyme](http://airbnb.io/enzyme) is a JavaScript testing utility for React that makes it easier to assert, manipulate, and traverse your React Component’s output. Its API is meant to be intuitive and flexible by mimicking jQuery’s API for DOM manipulation and traversal.
+
+> Enzyme uses the [React Test Utilities](https://reactjs.org/docs/test-utils.html) underneath, but is more convenient, readable, and powerful.
+
+#### Installation
+
+We will need to install Enzyme along with an adapter corresponding to the version of React we are using. For instance, if you are using Enzyme with React 16, you can run:
+
+```sh
+yarn add --dev enzyme
+```
+
+> commit: [Install enzyme package](https://github.com/rxseven/setup-react-app/commit/ffcfd49318de8e29d16265ffaa4e05548972c059)
+
+and:
+
+```sh
+yarn add --dev enzyme-adapter-react-16
+```
+
+> commit: [Install enzyme-adapter-react-16 package](https://github.com/rxseven/setup-react-app/commit/9b3cb0c5ff5ebbf0ddbcdb163766aa52eb520165)
+
+Each adapter may have additional peer dependencies which we will need to install as well. For instance, [enzyme-adapter-react-16](https://github.com/airbnb/enzyme/tree/master/packages/enzyme-adapter-react-16) has peer dependencies on [react](https://github.com/facebook/react), [react-dom](https://github.com/facebook/react/tree/master/packages/react-dom), and [react-test-renderer](https://reactjs.org/docs/test-renderer.html).
+
+We just need to install the missing one:
+
+```sh
+yarn add --dev react-test-renderer
+```
+
+> commit: [Install react-test-renderer package](https://github.com/rxseven/setup-react-app/commit/4d306c4979cd3c6b0dd7b9d12bc8cfd045ae8459)
+
+Additionally, we find [jest-enzyme](https://github.com/FormidableLabs/enzyme-matchers/blob/master/packages/jest-enzyme/README.md) helpful to simplify our tests with readable matchers. So, let’s also install it as a development dependency:
+
+```sh
+yarn add --dev jest-enzyme
+```
+
+> commit: [Install jest-enzyme package](https://github.com/rxseven/setup-react-app/commit/3b981431a833068302ff50e88b40b66cc36593a2)
+
+#### Configuration
+
+The adapter will also need to be configured in the global setup file. To create a configuration file, run the following command in the project’s root directory:
+
+```sh
+touch src/tests/setup.js
+```
+
+Then, add the configuration below:
+
+```js
+// Module dependencies
+import { configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+import 'jest-enzyme';
+
+// Configure Enzyme adapter
+configure({ adapter: new Adapter() });
+```
+
+Since we bootstraped the project with Create React App and we ran [`yarn eject`](#extracting-hidden-configuration) before creating `src/tests/setup.js` file, the resulting `package.json` file won’t contain any reference to it, so we should manually create the property `setupTestFrameworkScriptFile` in the configuration for Jest.
+
+To do that, open `jest.config.json` file and add the line below:
+
+```diff
+  {
+    ...
+    "setupFiles": ["<rootDir>/config/polyfills.js"],
++   "setupTestFrameworkScriptFile": "<rootDir>/src/tests/setup.js",
+    "testEnvironment": "node",
+    ...
+  }
+```
+
+Then, we have to update the reference path in `config/paths.js` file:
+
+```diff
+  module.exports = {
+    ...
+    yarnLockFile: resolveApp('yarn.lock'),
+-   testsSetup: resolveApp('src/setupTests.js'),
++   testsSetup: resolveApp('src/tests/setup.js'),
+    appNodeModules: resolveApp('node_modules'),
+    ...
+  };
+```
+
+> commit: [Setup Enzyme](https://github.com/rxseven/setup-react-app/commit/c195221b1d2382c73f5bc776809f5a3f41a4235f)
+
+### Configuring Redux testing
+
+In order to be able to [run tests on Redux application](https://redux.js.org/recipes/writing-tests), you will need install a [redux-mock-store](https://github.com/dmitry-zaets/redux-mock-store) library to create a mock store for your Redux testing.
+
+On the command line, let’s install the library as a development dependency:
+
+```sh
+yarn add --dev redux-mock-store
+```
+
+> commit: [Install redux-mock-store package](https://github.com/rxseven/setup-react-app/commit/614930d6fea21c3e621c4542f463625ba30a5cfc)
+
+### Linting
+
+To make ESLint happy when writing tests with Jest, we need to install an ESLint plugin for Jest.
+
+#### Installation
+
+Let’s install [eslint-plugin-jest](https://github.com/jest-community/eslint-plugin-jest) as a development dependency:
+
+```sh
+yarn add --dev eslint-plugin-jest
+```
+
+> commit: [Install eslint-plugin-jest package](https://github.com/rxseven/setup-react-app/commit/27761a2e4fdc05d0216d1a05db9e33ff7e7d1a0d)
+
+#### Configuration
+
+Open `.eslintrc` file and add `jest` to the `plugins` section:
+
+```diff
+  {
+    ...
+    "parser": "babel-eslint",
++   "plugins": ["jest"],
+    "rules": {...}
+    ...
+  }
+```
+
+Then, configure the rules for the plugin within `rules` section as follows:
+
+```diff
+  {
+    "rules": {
+      ...
+      "import/no-named-as-default-member": "off",
++     "jest/no-disabled-tests": "warn",
++     "jest/no-focused-tests": "error",
++     "jest/no-identical-title": "error",
++     "jest/prefer-to-have-length": "warn",
++     "jest/valid-expect": "error",
+      "jsx-a11y/anchor-is-valid": [...],
+      ...
+    }
+  }
+```
+
+We will also need to whitelist the environment variables provided by Jest by doing:
+
+```diff
+  {
+    "env": {
+      "browser": true,
+-     "node": true
++     "node": true,
++     "jest/globals": true
+    },
+    ...
+  }
+```
+
+This plugin exports a recommended configuration that enforces good testing practices. To enable this configuration, update `.eslintrc` file as below:
+
+```diff
+  {
+    "env": {...},
+-   "extends": ["react-app", "airbnb"],
++   "extends": ["react-app", "airbnb", "plugin:jest/recommended"],
+    "parser": "babel-eslint",
+    ...
+  }
+```
+
+> commit: [Setup ESLint plugin for Jest](https://github.com/rxseven/setup-react-app/commit/90c3ce740042c50603c03038e82dbacc4c7939b8)
+
+### Using Jest extension for code editor
+
+We will be using [Jest for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest) to automatically test our JavaScript in the editor.
+
+#### Installatation
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install orta.vscode-jest` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+#### Usage
+
+Head to the [extension’s documentation page](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest) and follow the instructions.
+
+### Running tests through the CLI
+
+We will define a scripts for running tests through the entire project from the command line.
+
+#### Configuration
+
+> `test` script is already set and ready to use.
+
+Jest has an integrated [coverage reporter](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#coverage-reporting) that requires no configuration, but we will need to add this to our workflow manually.
+
+Let’s open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "test": "node scripts/test.js --env=jsdom --config jest.config.json",
++     "test:coverage": "npm test -- --coverage --no-cache",
+      "type": "flow",
+      ...
+    }
+  }
+```
+
+> Note: the cache should only be disabled if you are experiencing caching related problems. On average, disabling the cache makes Jest at least two times slower. For more information on caching, see [Jest CLI Options](https://facebook.github.io/jest/docs/en/cli.html#cache) and [Caching Issues](https://facebook.github.io/jest/docs/en/troubleshooting.html#caching-issues).
+
+> commit: [Add script for running tests with coverage report through the CLI](https://github.com/rxseven/setup-react-app/commit/a3f5b15cd185863b9984697af04263bdbf45d09b)
+
+#### Usage
+
+Run the following script to run tests with Jest through the CLI:
+
+```sh
+yarn test
+```
+
+By default, when you run the command above, Jest will only run the tests related to files changed (modified) since the last commit. This is an optimization designed to make your tests run fast regardless of how many tests in the project you have. However, you can also press `a` in the watch mode to force Jest to run all tests.
+
+> Note: Jest will always run all tests on a [continuous-integration](#continuous-integration) server.
+
+Moreover, you can use the following command to run tests include a coverage report:
+
+```sh
+yarn test:coverage
+```
+
+> Note: tests run much slower with coverage so it is recommended to run it separately from your normal workflow.
+
+### Preventing broken code from being committed
+
+To prevent broken code from being committed to a repository, we need to setup a pre-commit hook to run tests against staged files that about to be committed.
+
+This pre-commit task will run tests against JavaScript files that are being marked as "staged" via `git add` before committing working code to a repository.
+
+First, open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "test:coverage": "npm test -- --coverage --no-cache",
++     "test:staged": "cross-env CI=true node scripts/test.js --env=jsdom --config jest.config.json --findRelatedTests"
+    }
+  }
+```
+
+> Note: when set `--findRelatedTests`, will find and run the tests that cover a space separated list of source files that were passed in as arguments. Useful for pre-commit hook integration to run the minimal amount of tests necessary. For more information, see [Jest CLI Options](https://facebook.github.io/jest/docs/en/cli.html#findrelatedtests-spaceseparatedlistofsourcefiles).
+
+> Note: when set `CI=true`, Create React App makes the test runner non-watching. Most CIs set this flag by default. Details are available [here](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#advanced-configuration).
+
+Then, in `.lintstagedrc` file, add the following line:
+
+```diff
+  {
+    "src/**/*.{js,jsx}": [
++     "yarn test:staged",
+      "yarn lint:script:fix",
+      "git add"
+    ]
+  }
+```
+
+> commit: [Add pre-commit hook for running tests against staged files](https://github.com/rxseven/setup-react-app/commit/57e9d8825cd97a53a7ac9e9aa8ff82cc27d971a0)
+
+### Applying tests
+
+You may need to apply tests to App component. On the command line, let’s create a test file:
+
+```sh
+touch src/components/core/App/index.test.js
+```
+
+Then, add the tests below:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import App from './index';
+
+// Tests
+describe('components/core/App', () => {
+  it('should render without crashing', () => {
+    shallow(<App />);
+  });
+});
+```
+
+> commit: [Add tests to App component](https://github.com/rxseven/setup-react-app/commit/5ba99e7568a20d7c221953f287677cff3615c1db)
 
 [Back to top](#table-of-contents)
