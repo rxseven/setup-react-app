@@ -70,7 +70,7 @@ React app made easy :sunglasses:
 
 #### Appendix
 
-
+- [Changelog](#changelog)
 
 ## Introduction
 
@@ -7530,3 +7530,7 @@ For more information on setting up continuous deployment, see [this documentatio
 > commit: [Setup continuous deployment with Heroku & Travis CI](https://github.com/rxseven/setup-react-app/commit/b5b651593c3c91498bcd9ae0d82196e3b3974799)
 
 [Back to top](#table-of-contents)
+
+## Changelog
+
+See [releases](https://github.com/rxseven/setup-react-app/releases).
