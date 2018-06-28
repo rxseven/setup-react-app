@@ -33,6 +33,7 @@ React app made easy :sunglasses:
 - [Formatting Code Automatically](#formatting-code-automatically)
 - [Using JSX Control Statements](#using-jsx-control-statements)
 - [Using Absolute Imports](#using-absolute-imports)
+- [Using HTTPS in Development](#using-https-in-development)
 
 #### Ecosystem
 
@@ -2917,5 +2918,40 @@ To do this, open `src/index.jsx` file and update with the following changes:
 ```
 
 > commit: [Apply absolute imports to the project starting point](https://github.com/rxseven/setup-react-app/commit/8a53681e581e8e8272af1799e180cbe8fd084217)
+
+[Back to top](#table-of-contents)
+
+## Using HTTPS in Development
+
+In many circumstances, you may require the [development server](https://github.com/webpack/webpack-dev-server) to serve your web pages over `https://` protocol.
+
+With Create React App, set the `HTTPS` environment variable to `true`, then start the development server as usual with `yarn start`:
+
+```sh
+HTTPS=true yarn start
+```
+
+> Note: the development server will use a self-signed certificate, so your web browser will almost definitely display a warning upon accessing the page.
+
+#### Adding a particular script
+
+Let’s make our development workflow great again by creating a particular script for running the app over HTTPS.
+
+To do this, open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    ...
+    "start": "node scripts/start.js",
++   "start:https": "HTTPS=true yarn start",
+    ...
+  }
+```
+
+> commit: [Add script for running the app over HTTPS protocol](https://github.com/rxseven/setup-react-app/commit/289d4eb97302a17de2eb3007a9b31e7ae254a9ee)
+
+#### Usage
+
+Run `yarn start:https` on the command line and view your app in the browser at [https://localhost:3000](https://localhost:3000).
 
 [Back to top](#table-of-contents)
