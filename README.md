@@ -41,6 +41,7 @@ React app made easy :sunglasses:
 
 - [Adding Sass and Post-Processing CSS](#adding-sass-and-post-processing-css)
 - [Adding CSS Modules](#adding-css-modules)
+- [Adding Redux](#adding-redux)
 
 #### Boilerplate & Skeleton
 
@@ -3367,5 +3368,689 @@ Open `.babelrc` file and add the configuration below:
 ```
 
 > commit: [Setup Babel plugin for React CSS modules](https://github.com/rxseven/setup-react-app/commit/5323fc945992c4271a8fbafae610da9dc71ce0a8)
+
+[Back to top](#table-of-contents)
+
+## Adding Redux
+
+### Installing Redux ecosystem
+
+**[Redux](https://redux.js.org)**
+
+Redux is a very popular library that provides a predictable state container for JavaScript applications.
+
+```sh
+yarn add redux
+```
+
+> commit: [Install redux package](https://github.com/rxseven/setup-react-app/commit/22b09375a4558408196869ed70e7cf1f443b7380)
+
+**[React Redux](https://github.com/reduxjs/react-redux)**
+
+React Redux is the official bindings between React app and Redux. It adds some useful syntactic sugar for binding your components to Redux state.
+
+```sh
+yarn add react-redux
+```
+
+> commit: [Install react-redux package](https://github.com/rxseven/setup-react-app/commit/aae1025f94ed930a7019d068438c4e6f27760b45)
+
+**[Redux Saga](https://redux-saga.js.org)**
+
+Redux Saga is a Redux middleware library, that is designed to make handling side effects (i.e. asynchronous actions like data fetching and impure things like accessing the browser cache) in your Redux app nice and simple. It achieves this by leveraging an ES6 Generators, allowing you to write asynchronous code that looks synchronous, and is very easy to test and handle failures.
+
+```sh
+yarn add redux-saga
+```
+
+> commit: [Install redux-saga package](https://github.com/rxseven/setup-react-app/commit/6548037fec4891a6ff20428370f38406ec432077)
+
+**[Reselect](https://github.com/reduxjs/reselect)**
+
+Reselect is a tiny memoized selector library that provides a convenient way of getting values from a store in a React & Redux application.
+
+```sh
+yarn add reselect
+```
+
+> commit: [Install reselect package](https://github.com/rxseven/setup-react-app/commit/5bb25dd43033917ca131177a4b652a71407626f7)
+
+**[Immutable](https://facebook.github.io/immutable-js/)**
+
+Because Redux doesn’t allow us to mutate the application state, it can be helpful to enforce yourself by modeling application state with immutable data structures.
+
+Immutable.js provides many Persistent Immutable data structures with mutative interfaces, and they’re implemented in an efficient way.
+
+```sh
+yarn add immutable
+```
+
+> commit: [Install immutable package](https://github.com/rxseven/setup-react-app/commit/fac8b8855874e5b515e4969e9eeecc03cba3c752)
+
+**[Redux Immutable](https://github.com/gajus/redux-immutable)**
+
+Redux utility for creating an equivalent function of Redux `combineReducers` that works with Immutable.js state.
+
+```sh
+yarn add redux-immutable
+```
+
+> commit: [Install redux-immutable package](https://github.com/rxseven/setup-react-app/commit/5499a66ce0b41f4d1cbbf6b0e375475c2d137c22)
+
+**[Redux Form](https://redux-form.com/7.4.0/)**
+
+A Higher order component decorator for forms using React and Redux to keep form state in a Redux store.
+
+```sh
+yarn add redux-form
+```
+
+> commit: [Install redux-form package](https://github.com/rxseven/setup-react-app/commit/a056bae998fd61f5b8cd88ff28bd534f2daf7247)
+
+**[Normalizr](https://github.com/paularmstrong/normalizr)**
+
+Many APIs return JSON data that has deeply nested objects. Using data in this kind of structure is often very difficult for JavaScript applications, especially those using Redux.
+
+The idea behind Normalizr is to take an API response that has nested objects with a schema definition and flatten them.
+
+```sh
+yarn add normalizr
+```
+
+> commit: [Install normalizr package](https://github.com/rxseven/setup-react-app/commit/cda4afe57ac0c32bb06c67874a036e271bc489a6)
+
+**Library Definitions**
+
+Finally, don’t forget to update the library definitions:
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/fbdc839faa997b095a6982638d9e65e26832ce4a)
+
+### Creating a folder structure
+
+To create a Redux folder structure, run the following command in the project’s root directory:
+
+```sh
+cd src && mkdir reducers sagas store components/core/Root
+```
+
+Now, your Redux folder structure should look like this:
+
+```
+src
+├── components
+│   └── core
+│       └── Root
+├── reducers
+├── sagas
+└── store
+```
+
+### Creating a root reducer
+
+One day, your app would grow more complex, you’ll want to split your reducing function into separate functions, each managing independent parts of the state (domain).
+
+A root reducer turns an object whose values are different reducing functions into a single reducing function you can pass to a store.
+
+On the command line, run the following command:
+
+```sh
+touch src/reducers/index.js
+```
+
+Then, add the content below:
+
+```js
+// Module dependencies
+import { combineReducers } from 'redux-immutable';
+
+// Combine reducers
+const reducer = combineReducers({
+  data: () => null
+});
+
+// Module exports
+export default reducer;
+```
+
+We will also need to configure Jest to ignore root reducer when running code coverage, open `jest.config.json` file and update with the following changes:
+
+```diff
+  {
+    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+    "coveragePathIgnorePatterns": [
+      ...
+      "<rootDir>/src/dependencies/",
++     "<rootDir>/src/reducers/",
+      "<rootDir>/src/index.jsx",
+      ...
+    ]
+  }
+```
+
+> commit: [Create root Redux reducer](https://github.com/rxseven/setup-react-app/commit/abf68103e26bc4483e519718c3414dbe7f0df766)
+
+### Creating a root saga
+
+On the command line, run the following command:
+
+```sh
+touch src/sagas/index.js
+```
+
+Then, add the content below:
+
+```js
+// Module dependencies
+import { map } from 'ramda';
+import { all, fork } from 'redux-saga/effects';
+
+// Combine sagas
+const sagas = {};
+
+// Root saga
+function* root() {
+  yield all(map(fork, sagas));
+}
+
+// Module exports
+export default root;
+```
+
+We will also need to configure Jest to ignore root saga when running code coverage, open `jest.config.json` file and update with the following changes:
+
+```diff
+  {
+    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+    "coveragePathIgnorePatterns": [
+      ...
+      "<rootDir>/src/reducers/",
++     "<rootDir>/src/sagas/",
+      "<rootDir>/src/tests/setup.js",
+      ...
+    ]
+  }
+```
+
+> commit: [Create root Redux saga](https://github.com/rxseven/setup-react-app/commit/3a394c1b154c77d6ca475a25195dc5aec76af63a)
+
+### Configuring a store
+
+On the command line, run the following command:
+
+```sh
+touch src/store/setup.js
+```
+
+Then, add the configuration below:
+
+```js
+// Module dependencies
+import { Map } from 'immutable';
+import { applyMiddleware, compose, createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+
+import reducer from 'reducers';
+import saga from 'sagas';
+
+// Initialize middleware
+const sagaMiddleware = createSagaMiddleware();
+
+// Initialize state
+const initialState = Map();
+
+// Store configuration
+const configureStore = () => {
+  // Create store
+  const store = createStore(
+    reducer,
+    initialState,
+    compose(
+      // Middleware
+      applyMiddleware(sagaMiddleware),
+
+      // Redux DevTools Extension
+      window.devToolsExtension ? window.devToolsExtension() : f => f
+    )
+  );
+
+  // Run middleware
+  sagaMiddleware.run(saga);
+
+  // Check if Webpack Hot Module Replacement is enabled
+  if (process.env.NODE_ENV !== 'production') {
+    if (module.hot) {
+      // Enable HMR by accepting update of dependency
+      module.hot.accept('../reducers', () => {
+        // Replaces the reducer currently used by the store to calculate the state
+        store.replaceReducer(reducer);
+      });
+    }
+  }
+
+  // Return store configuration
+  return store;
+};
+
+// Module exports
+export default configureStore;
+```
+
+We will also need to configure Jest to ignore store configuration when running code coverage, open `jest.config.json` file and update with the following changes:
+
+```diff
+  {
+    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+    "coveragePathIgnorePatterns": [
+      ...
+      "<rootDir>/src/sagas/",
++     "<rootDir>/src/store/",
+      "<rootDir>/src/tests/setup.js",
+      ...
+    ]
+  }
+```
+
+> commit: [Setup Redux store](https://github.com/rxseven/setup-react-app/commit/602accc3c4fcc5205be1b935b6e73b0de096b502)
+
+### Creating Root component
+
+Create `Root` folder inside `src/components/core` then create a component along with its test file:
+
+```sh
+mkdir src/components/core/Root && cd src/components/core/Root
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Return = React.Node;
+
+// Component
+const Root = (): Return => <div>Root component</div>;
+
+// Module exports
+export default Root;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Root from './index';
+
+// Tests
+describe('components/core/Root', () => {
+  it('should render without crashing', () => {
+    shallow(<Root />);
+  });
+});
+```
+
+> commit: [Create Root component](https://github.com/rxseven/setup-react-app/commit/58704fe052e979a61db05e231f0918cb4c101240)
+
+### Connecting Root component to Redux store
+
+We will be configuring the Redux store available to the `connect()` calls in the React component hierarchy below.
+
+To do that, open `src/components/core/Root/index.jsx` file and update with the following changes:
+
+```diff
+// @flow
+// Module dependencies
+  import * as React from 'react';
++ import { Provider } from 'react-redux';
++
++ import App from 'components/core/App';
+
+  // Types
++ type Props = { store: any };
+  type Return = React.Node;
+
+  // Component
+- const Root = (): Return => <div>Root component</div>;
++ const Root = ({ store }: Props): Return => (
++   <Provider store={store}>
++     <App />
++   </Provider>
++ );
+
+// Module exports
+export default Root;
+```
+
+We also need to update its tests:
+
+```diff
+  // Module dependencies
+  import { shallow } from 'enzyme';
++ import { Map } from 'immutable';
+  import React from 'react';
++ import configureStore from 'redux-mock-store';
+
+  // Components
++ import App from 'components/core/App';
+  import Root from './index';
+
+  // Tests
+  describe('components/core/Root', () => {
+-   it('should render without crashing', () => {
+-     shallow(<Root />);
+-   });
++   it('should accept "store" prop', () => {
++     // Initialize mock Redux store
++     const store = configureStore();
++
++     // Mock data
++     const initialState = Map();
++
++     // Shallow rendering
++     shallow(<Root store={store(initialState)} />);
++   });
++
++   it('should render <App />', () => {
++     // Initialize mock Redux store
++     const store = configureStore();
++
++     // Mock data
++     const initialState = Map();
++
++     // Shallow rendering
++     const wrapper = shallow(<Root store={store(initialState)} />);
++
++     // Assertions
++     expect(wrapper).toContainReact(<App />);
++   });
+  });
+```
+
+> commit: [Connect Root component to Redux store](https://github.com/rxseven/setup-react-app/commit/6cedd5cc89227adca2a7d9285da182a3953f1295)
+
+### Configuring project entry point & scaffold component hierarchy
+
+Open `src/index.js` file and update with the following changes:
+
+```diff
+  ...
+  ...
+
+  import registerServiceWorker from 'registerServiceWorker';
+  import 'dependencies';
+
+- // Starting point component
+- import App from 'components/core/App';
++ import Root from 'components/core/Root';
++
++ // Redux store
++ import configureStore from 'store/setup';
+
+  ...
+  ...
+
++ // Initialize Redux store
++ const store = configureStore();
++
+  // Render React element into the DOM
+- ReactDOM.render(<App />, root);
++ ReactDOM.render(<Root store={store} />, root);
+```
+
+> commit: [Setup project entry point & scaffold component hierarchy](https://github.com/rxseven/setup-react-app/commit/a28a96bb5c4fb7198f543548d6a65800f567f579)
+
+### Creating a Higher Order Component to convert container component’s Immutable.js props to presentational component’s JavaScript props
+
+We need a higher order component to map the Immutable.js props in our container component to the pure JavaScript props used in our presentational component. It simply takes the Immutable.js props from our container component, and converts them using Immutable.js’s `toJS()` to plain JavaScript props, which are then passed to our presentational component. For more information, see [What are some opinionated Best Practices for using Immutable.JS with Redux?](https://redux.js.org/recipes/using-immutable.js-with-redux#what-are-some-opinionated-best-practices-for-using-immutable-js-with-redux)
+
+Let’s create `toJS` folder and a component file inside `src/HOCs/common`:
+
+```sh
+mkdir src/HOCs/common/toJS && touch src/HOCs/common/toJS/index.jsx
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// Module dependencies
+import { Iterable } from 'immutable';
+import React from 'react';
+
+// Component
+const toJS = WrappedComponent => (wrappedComponentProps) => {
+  // Variables
+  const KEY = 0;
+  const VALUE = 1;
+
+  // Map Immutable props to pure JavaScript props
+  const propsJS = Object.entries(wrappedComponentProps).reduce((newProps, wrappedComponentProp) => {
+    // eslint-disable-next-line
+    newProps[wrappedComponentProp[KEY]] = Iterable.isIterable(wrappedComponentProp[VALUE])
+      ? wrappedComponentProp[VALUE].toJS()
+      : wrappedComponentProp[VALUE];
+    return newProps;
+  }, {});
+
+  return <WrappedComponent {...propsJS} />;
+};
+
+// Module exports
+export default toJS;
+```
+
+We will also need to configure Jest to ignore this HOC when running code coverage, open `jest.config.json` file and update with the following changes:
+
+```diff
+  {
+    "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+    "coveragePathIgnorePatterns": [
+      ...
+      "<rootDir>/src/dependencies/",
++     "<rootDir>/src/HOCs/common/toJS",
+      "<rootDir>/src/reducers/",
+      ...
+    ]
+  }
+```
+
+> commit: [Create HOC to convert Immutable data structure to pure JavaScript object](https://github.com/rxseven/setup-react-app/commit/3e9c738483fa8340cb859837da86d5f0e6017a8b)
+
+### Creating a reducer for root data domain
+
+On the command line, create a reducer along with its test file:
+
+```sh
+mkdir src/data && cd src/data && touch reducers.js
+mkdir __tests__ && touch __tests__/reducers.test.js
+```
+
+#### Reducer
+
+Add the content below to `src/data/reducers.js`:
+
+```js
+// @flow
+
+// Types
+type Action = { +type: string };
+type State = ?Object;
+
+// Reducer
+export default (state: State = null, action: Action): State => state;
+```
+
+We will also need to combine this slice reducer with the current application state. To do this, open `src/reducers/index.js` and update with the following changes:
+
+```diff
+  ...
+
++ // Reducers
++ import data from 'data/reducers';
++
+  // Combine reducers
+  const reducer = combineReducers({
+-   data: () => null
++   data
+  });
+
+  ...
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```js
+// Reducers
+import reducers from '../reducers';
+
+// Tests
+describe('data/reducers', () => {
+  it('should return the initial state', () => {
+    // Assertions
+    expect(reducers(undefined, {})).toBeNull();
+  });
+});
+```
+
+> commit: [Define reducer for root data domain](https://github.com/rxseven/setup-react-app/commit/542497e28b801f204d7e6527e862aee5311f3ea1)
+
+### Creating a reducer for root screens domain
+
+On the command line, create a reducer along with its test file:
+
+```sh
+cd src/screens && touch reducers.js
+mkdir __tests__ && touch __tests__/reducers.test.js
+```
+
+#### Reducer
+
+Add the content below to `src/screens/reducers.js`:
+
+```js
+// @flow
+
+// Types
+type Action = { +type: string };
+type State = ?Object;
+
+// Reducer
+export default (state: State = null, action: Action): State => state;
+```
+
+We will also need to combine this slice reducer with the current application state. To do this, open `src/reducers/index.js` and update with the following changes:
+
+```diff
+  ...
+
+  import data from 'data/reducers';
++ import screens from 'screens/reducers';
+
+  // Combine reducers
+  const reducer = combineReducers({
+-   data
++   data,
++   screens
+  });
+
+  ...
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```js
+// Reducers
+import reducers from '../reducers';
+
+// Tests
+describe('screens/reducers', () => {
+  it('should return the initial state', () => {
+    // Assertions
+    expect(reducers(undefined, {})).toBeNull();
+  });
+});
+```
+
+> commit: [Define reducer for root screens domain](https://github.com/rxseven/setup-react-app/commit/2beec741f340dcd5aa1ee84982eff757b8ab4605)
+
+### Creating state models
+
+On the command line, create `models` folder inside `src/constants`:
+
+```sh
+mkdir src/constants/models
+```
+
+Then, create `state.js` file inside `models` folder:
+
+```sh
+touch src/constants/models/state.js
+```
+
+Inside `state.js`, just export an empty object:
+
+```js
+export default {};
+```
+
+> commit: [Define state models](https://github.com/rxseven/setup-react-app/commit/cf585128ac66a408dd82661be71a77de4fc62cf8)
+
+### Creating asynchronous objects
+
+Open `src/constants/models/state.js` and replace the entire empty object with the following values:
+
+```js
+export default {
+  model: {
+    asynchronous: {
+      error: null,
+      loading: false
+    }
+  },
+  pattern: {
+    asynchronous: props => ({
+      state: {
+        ui: {
+          asynchronous: {
+            error: null,
+            loading: false
+          }
+        }
+      }
+    })
+  },
+  wrapper: {
+    asynchronous: props => ({
+      state: {
+        ui: {
+          asynchronous: { ...props }
+        }
+      }
+    })
+  }
+};
+```
+
+> commit: [Add asynchronous objects to state models](https://github.com/rxseven/setup-react-app/commit/7e9c16da70f5ae2372e552213a83f85f28227d6f)
 
 [Back to top](#table-of-contents)
