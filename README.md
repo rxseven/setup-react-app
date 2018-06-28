@@ -53,6 +53,7 @@ React app made easy :sunglasses:
 - [Adding a Layout Boilerplate](#adding-a-layout-boilerplate)
 - [Adding Common Components](#adding-common-components)
 - [Adding Core Components](#adding-core-components)
+- [Adding Main Screens](#adding-main-screens)
 
 #### Enhancement
 
@@ -6231,5 +6232,363 @@ $color-light: #999;
 ```
 
 > commit: [Create Footer component](https://github.com/rxseven/setup-react-app/commit/08beb6fe35e6640fa189a78188cf25596851e5ea)
+
+[Back to top](#table-of-contents)
+
+## Adding Main Screens
+
+### Home page
+
+On the command line, create `Home` folder inside `src/screens/main`:
+
+```sh
+mkdir src/screens/main/Home
+```
+
+Then, create a component along with its test file and stylesheets inside `Home`:
+
+```sh
+cd src/screens/main/Home
+touch index.jsx index.test.js styles.scss
+```
+
+#### Component
+
+To create a screen component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import ExLink from 'components/common/ExLink';
+import Layout from 'components/common/Layout';
+import { Body, Document, Head, Title } from 'components/common/Page';
+
+// Constants
+import URLs from 'constants/router/urls';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Return = React.Node;
+
+// Component
+const Home = (): Return => (
+  <Document>
+    <Head>
+      <Title>Setup React App</Title>
+    </Head>
+    <Body>
+      <Layout>
+        <h2 className="headline">Setup React App</h2>
+        <p>
+          A minimal React &amp; Redux boilerplate with best practices bootstrapped with{' '}
+          <ExLink to="https://github.com/facebookincubator/create-react-app">
+            Create React App
+          </ExLink>. It can save you a lot of time and energy searching for highly scalable
+          solutions with a nice development experience to get started.
+        </p>
+        <div styleName="footnote">
+          <div className="button-wrapper">
+            <ExLink styles="btn btn-primary btn-sm" to={`https://github.com/${URLs.repo}`}>
+              View on GitHub
+            </ExLink>
+          </div>
+        </div>
+      </Layout>
+    </Body>
+  </Document>
+);
+
+// Module exports
+export default Home;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file, the following is a simple “smoke test” verifying that a component renders without throwing:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Home from './index';
+
+// Tests
+describe('screens/main/Home', () => {
+  it('should render without crashing', () => {
+    shallow(<Home />);
+  });
+});
+```
+
+#### Styles
+
+Let’s add a minimal amount of styles to the component as below:
+
+```scss
+// Footnote
+.footnote {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 1rem;
+}
+```
+
+> commit: [Create Home screen](https://github.com/rxseven/setup-react-app/commit/5137952f38e4760e97d98c67e162763ff0fcadf5)
+
+#### Route
+
+Open `src/constants/router/paths.js` file and add new route property for home screen (root route):
+
+```diff
+- export default {};
++ export default {
++   main: {
++     home: '/'
++   }
++ };
+```
+
+Then, open `src/components/core/Routes/index.jsx` file and define a root route:
+
+```diff
++ // Screens
++ import Home from 'screens/main/Home';
++
++ // Constants
++ import PATHS from 'constants/router/paths';
++
+  // Component
+  const Routes = () => (
+    <Switch>
+-     <Route path="/" render={() => <div>Home</div>} />
++     <Route component={Home} exact path={PATHS.main.home} />
+    </Switch>
+  );
+```
+
+> commit: [Add route to Home screen](https://github.com/rxseven/setup-react-app/commit/ee3809e177b213f116cbdcbd0183f5edc649b009) (for more information about the change, see comment on GitHub)
+
+#### Navigation link
+
+Open `src/components/core/Header/index.jsx` and replace a branding text with the following `NavLink`:
+
+```diff
+  ...
+  import * as React from 'react';
++ import { NavLink } from 'react-router-dom';
+
+  ...
+
++ // Constants
++ import PATHS from 'constants/router/paths';
+
+  ...
+
+  // Component
+  const Header = (): Return => (
+    <header styleName="container">
+      <Container>
+        <Row>
+          <Column>
+-           <div styleName="brand">Setup React App</div>
++           <div styleName="brand">
++             <NavLink activeClassName="active" exact styleName="link" to={PATHS.main.home}>
++               Setup React App
++             </NavLink>
++           </div>
+          </Column>
+        </Row>
+      </Container>
+    </header>
+  );
+
+  ...
+  ...
+```
+
+Then, open `src/components/core/Header/styles.scss` and add styles for a navigation link:
+
+```diff
+  // Global styles
+  @import '../../../styles/base/settings';
++ @import '../../../styles/mixins/transition';
++
++ // Variables
++ $color-bright: #fff;
++ $color-light: rgba(255, 255, 255, 0.5);
+
+  ...
+  ...
+
+  // Branding
+- .brand {}
++ .brand {
++   > .link {
++     @include transition-link;
++     color: $color-bright;
++
++     &:hover {
++       color: $color-light;
++       text-decoration: none;
++     }
++
++     &:global(.active) {
++       color: $color-light;
++       cursor: default;
++     }
++   }
++ }
+```
+
+> commit: [Add navigation link to Home screen](https://github.com/rxseven/setup-react-app/commit/ee3809e177b213f116cbdcbd0183f5edc649b009)
+
+### Page not found (404)
+
+You can display a custom 404 error page when people try to access non-existent pages on your React app.
+
+On the command line, create `404` folder inside `src/screens/main`:
+
+```sh
+mkdir src/screens/main/404
+```
+
+Then, create a component along with its test file inside `404`:
+
+```sh
+cd src/screens/main/404
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a screen component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+
+import Layout from 'components/common/Layout';
+import { Body, Document, Head, Title } from 'components/common/Page';
+
+// Constants
+import PATHS from 'constants/router/paths';
+
+// Types
+type Return = React.Node;
+
+// Component
+const NotFound = (): Return => (
+  <Document>
+    <Head>
+      <Title>Page not found</Title>
+    </Head>
+    <Body>
+      <Layout>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">404</h5>
+            <p className="card-text">This is not web page you are looking for.</p>
+            <Link className="card-link" to={PATHS.main.home}>
+              Go back to Home page
+            </Link>
+          </div>
+        </div>
+      </Layout>
+    </Body>
+  </Document>
+);
+
+// Module exports
+export default NotFound;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file, the following is a simple “smoke test” verifying that a component renders without throwing:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import NotFound from './index';
+
+// Tests
+describe('screens/main/404', () => {
+  it('should render without crashing', () => {
+    shallow(<NotFound />);
+  });
+});
+```
+
+> commit: [Create 404 screen](https://github.com/rxseven/setup-react-app/commit/4af6abfdd0fbf2913cecc9a43131650ad235b199)
+
+#### Route
+
+Then, open `src/components/core/Routes/index.jsx` file and define a 404 route:
+
+```diff
+  // Screens
+  ...
++ import NotFound from 'screens/main/404';
+
+  ...
+
+  // Component
+  const Routes = () => (
+    <Switch>
+      <Route component={Home} exact path={PATHS.main.home} />
++     <Route component={NotFound} />
+    </Switch>
+  );
+```
+
+> commit: [Add route to 404 screen](https://github.com/rxseven/setup-react-app/commit/c42506e1a3a1d214562d0a3f34daec2634a625c9)
+
+#### Navigation link
+
+Open `src/screens/main/Home/index.jsx` and add a `404` link:
+
+```diff
+  ...
+  import * as React from 'react';
++ import { Link } from 'react-router-dom';
+
+  ...
+  ...
+
+  // Component
+  const Home = () => (
+    <Document>
+      ...
+      <Body>
+        <Layout>
+          ...
+          <div styleName="footnote">
+            <div styleName="button-wrapper">
+              <ExLink>View on GitHub</ExLink>
++             <Link className="btn btn-secondary btn-sm" to="/404">
++               404
++             </Link>
+            </div>
+          </div>
+        </Layout>
+      </Body>
+    </Document>
+  );
+
+  ...
+  ...
+```
+
+> commit: [Add navigation link to 404 screen](https://github.com/rxseven/setup-react-app/commit/7761af93e744eca99462940097892d17d4b67a24)
 
 [Back to top](#table-of-contents)
