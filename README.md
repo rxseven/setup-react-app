@@ -49,6 +49,7 @@ React app made easy :sunglasses:
 #### Boilerplate & Skeleton
 
 - [Adding a Global Stylesheet](#adding-a-global-stylesheet)
+- [Adding Sass Boilerplate](#adding-sass-boilerplate)
 
 #### Enhancement
 
@@ -4313,5 +4314,220 @@ To do that, open `src/index.jsx` file and add the following import statement nex
 ```
 
 > commit: [Add global styles to the project starting point](https://github.com/rxseven/setup-react-app/commit/8483aad1b76653c19fb8dc593483d911555d308e)
+
+[Back to top](#table-of-contents)
+
+## Adding Sass Boilerplate
+
+Let’s add minimal styles to kickstart a responsive React app.
+
+### Variables
+
+Open `src/styles/base/_settings.scss` file and add the global variables as follows:
+
+```scss
+// Breakpoints
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+// Screen sizes
+$screen-xs: 320px;
+$screen-sm: 576px;
+$screen-md: 768px;
+$screen-lg: 992px;
+$screen-xl: 1200px;
+
+// Layout
+$footer-height-xs: 145px;
+$footer-height-sm: 175px;
+$header-height-xs: 35px;
+$header-height-sm: 45px;
+```
+
+> commit: [Add generic Sass variables](https://github.com/rxseven/setup-react-app/commit/ae837968dac218edf914ea2bbb3227077208ac60)
+
+### Mixins
+
+#### Clearfix
+
+On the command line, create `_clearfix.scss` file inside `src/styles/mixins`:
+
+```sh
+touch src/styles/mixins/_clearfix.scss
+```
+
+Then, add a clearfix mixin:
+
+```scss
+@mixin clearfix {
+  &::after {
+    clear: both;
+    content: '';
+    display: block;
+  }
+}
+```
+
+And add the following import statement to the Sass starting point:
+
+```diff
+  // Base
+  @import './base/settings';
+
++ // Mixins
++ @import './mixins/clearfix';
+```
+
+> commit: [Add clearfix mixin](https://github.com/rxseven/setup-react-app/commit/c65340d1da7d7bdbc79e02fcc0ed7e18a7c5c784)
+
+#### Transition
+
+On the command line, create `_transition.scss` file inside `src/styles/mixins`:
+
+```sh
+touch src/styles/mixins/_transition.scss
+```
+
+Then, add a transition mixin:
+
+```scss
+// Link transition
+@mixin transition-link {
+  transition: color 0.2s ease-in-out;
+}
+```
+
+And add the following import statement to the Sass starting point:
+
+```diff
+  ...
+  ...
+
+  // Mixins
+  @import './mixins/clearfix';
++ @import './mixins/transition';
+```
+
+> commit: [Add link transition mixin](https://github.com/rxseven/setup-react-app/commit/d0506eceee51ca4e79f9a1fed81361af55e724df)
+
+### Utilities
+
+#### Visibility
+
+On the command line, create `_visibility.scss` file inside `src/styles/utilities`:
+
+```sh
+touch src/styles/utilities/_visibility.scss
+```
+
+Then, add generic visibility styles:
+
+```scss
+:global(.visible) {
+  visibility: visible;
+}
+
+:global(.invisible) {
+  visibility: hidden;
+}
+```
+
+And add the following import statement to the Sass starting point:
+
+```diff
+  ...
+  @import './mixins/transition';
+
++ // Utilities
++ @import './utilities/visibility';
+```
+
+> commit: [Add generic visibility styles](https://github.com/rxseven/setup-react-app/commit/6a963d30a0686bcf86e80ede277eaba713f37a10)
+
+### Content
+
+#### Typography
+
+On the command line, create `_typography.scss` file inside `src/styles/content`:
+
+```sh
+touch src/styles/content/_typography.scss
+```
+
+Then, add generic typography styles:
+
+```scss
+:global(.headline) {
+  font-size: 1.5rem;
+}
+
+:global(.subheadline) {
+  font-size: 1.25rem;
+}
+
+:global(.text-block) {
+  display: block;
+}
+
+:global(.text-end) {
+  margin-bottom: 0;
+}
+```
+
+And add the following import statement to the Sass starting point:
+
+```diff
+  ...
+  @import './mixins/transition';
+
++ // Content
++ @import './content/typography';
+```
+
+> commit: [Add generic typography styles](https://github.com/rxseven/setup-react-app/commit/203a570deba789181e247ff99d74a6df3cf7d05c)
+
+### Components
+
+#### Buttons
+
+On the command line, create `_buttons.scss` file inside `src/styles/components`:
+
+```sh
+touch src/styles/components/_buttons.scss
+```
+
+Then, add generic button styles:
+
+```scss
+// Button wrapper
+:global(.button-wrapper) {
+  $element-spacing: 0.25rem;
+
+  > :not(:last-child) {
+    margin-right: $element-spacing;
+  }
+
+  > :not(:first-child) {
+    margin-left: $element-spacing;
+  }
+}
+```
+
+And add the following import statement to the Sass starting point:
+
+```diff
+  ...
+  ...
+
+  // Utilities
+  @import './utilities/visibility';
++
++ // Components
++ @import './components/buttons';
+```
+
+> commit: [Add generic button styles](https://github.com/rxseven/setup-react-app/commit/a5dce32962e662da4bd57be2f7e92835a3a81cad)
 
 [Back to top](#table-of-contents)
