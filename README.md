@@ -50,6 +50,7 @@ React app made easy :sunglasses:
 
 - [Adding a Global Stylesheet](#adding-a-global-stylesheet)
 - [Adding Sass Boilerplate](#adding-sass-boilerplate)
+- [Adding a Layout Boilerplate](#adding-a-layout-boilerplate)
 
 #### Enhancement
 
@@ -4529,5 +4530,42 @@ And add the following import statement to the Sass starting point:
 ```
 
 > commit: [Add generic button styles](https://github.com/rxseven/setup-react-app/commit/a5dce32962e662da4bd57be2f7e92835a3a81cad)
+
+[Back to top](#table-of-contents)
+
+## Adding a Layout Boilerplate
+
+On the command line, create `_layout.scss` file inside `src/styles/base`:
+
+```sh
+touch src/styles/base/_layout.scss
+```
+
+Then, add base layout styles to `html` and `body` as follows:
+
+```scss
+// HTML
+html {
+  font-size: 87.5%;
+  min-height: 100%;
+  position: relative;
+}
+
+// Body
+body {
+  font-size: 1rem;
+  min-width: $screen-xs;
+}
+```
+
+And add the following import statement to the Sass starting point:
+
+```diff
+  // Base
+  @import './base/settings';
++ @import './base/layout';
+```
+
+> commit: [Add base layout to main HTML elements](https://github.com/rxseven/setup-react-app/commit/b3ac48294e5d99d0f3a0466d5891b6fb157346eb)
 
 [Back to top](#table-of-contents)
