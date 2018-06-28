@@ -66,6 +66,7 @@ React app made easy :sunglasses:
 
 - [Deployment](#deployment)
 - [Continuous Integration](#continuous-integration)
+- [Continuous Deployment](#continuous-deployment)
 
 #### Appendix
 
@@ -7479,5 +7480,53 @@ That’s it.
 > commit: [Add Coveralls's coverage status badge to README](https://github.com/rxseven/setup-react-app/commit/a2e2978020037d906904129ba662056799c4948e)
 
 > It is good to aim a coverage above 80% but be careful not to confuse high percentage of coverage with a good test suite. A code coverage tool will help you find untested code but it is the quality of your tests that will make the difference at the end of the day.
+
+[Back to top](#table-of-contents)
+
+## Continuous Deployment
+
+Continuous deployment (CD) is an excellent way for teams to accelerate development. It removes the impediments related to the release approval process by making it an automated process, and it allows developers to get feedback from users as soon as they’re completed with their work. Issues are easier to identify and fix, and there’s less context switching as there’s no release time anymore.
+
+You’ll see in this section how you can implement a continuous deployment using [Travis CI](http://travis-ci.org) to automatically deploy your React app to [Heroku](https://www.heroku.com) after a successful build.
+
+#### Connecting Travis CI to Heroku
+
+**Heroku**
+
+1.  Open your [Heroku account page](https://dashboard.heroku.com/account) by clicking on your account avatar at the right-top corner of the screen.
+2.  Under **API Key** section, click **Reveal** button to show your secret API key.
+3.  Once the key shows up, copy it to a clipboard, and click **Hide** button to hide the key.
+
+**Travis CI**
+
+1.  Open your Travis CI’s project settings page by clicking on **More options** button (right next to the tabbed navigation).
+2.  Under **Environment Variables** section, add new environment variable for referencing your Heroku’s API key:
+
+- Name: `HEROKU_API_KEY`
+- Value: `API_KEY` _(the key you’ve copied from your Heroku account)_
+- Displaying value in build log: `disabled`
+
+3.  Click **Add** button to save the newly created variable.
+
+> **Best practices for securely storing API keys**<br>Storing API Keys, or any other sensitive information, on a Git repository is something to be avoided at all costs. Even if the repository is private, you should not see it as a safe place to store sensitive information. (details are available in [this article](https://medium.freecodecamp.org/how-to-securely-store-api-keys-4ff3ea19ebda))
+
+#### Setting up continuous deployment
+
+Open `.travis.yml` file and add the following lines to the bottom of the existing configuration:
+
+```yml
+deploy:
+  provider: heroku
+  app:
+    develop: setup-react-app-dev
+    master: setup-react-app
+    staging: setup-react-app-staging
+  api_key:
+    secure: $HEROKU_API_KEY
+```
+
+For more information on setting up continuous deployment, see [this documentation](https://docs.travis-ci.com/user/deployment/heroku).
+
+> commit: [Setup continuous deployment with Heroku & Travis CI](https://github.com/rxseven/setup-react-app/commit/b5b651593c3c91498bcd9ae0d82196e3b3974799)
 
 [Back to top](#table-of-contents)
