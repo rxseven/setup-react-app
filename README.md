@@ -43,6 +43,7 @@ React app made easy :sunglasses:
 - [Adding CSS Modules](#adding-css-modules)
 - [Adding Redux](#adding-redux)
 - [Adding React Router](#adding-react-router)
+- [Adding Bootstrap](#adding-bootstrap)
 
 #### Boilerplate & Skeleton
 
@@ -4173,5 +4174,40 @@ describe('components/core/Routes', () => {
 ```
 
 > commit: [Create Routes component](https://github.com/rxseven/setup-react-app/commit/f58887f3524310f488ed2814f2e4a1a5f07781e0)
+
+[Back to top](#table-of-contents)
+
+## Adding Bootstrap
+
+[Bootstrap](http://getbootstrap.com) is an open source toolkit for developing with HTML, CSS, and jQuery. Quickly prototype your ideas or build your entire app with its Sass variables and mixins, responsive grid system, and extensive prebuilt components.
+
+#### Installation
+
+On the command line, run the following commands:
+
+```sh
+yarn add bootstrap
+```
+
+> commit: [Install bootstrap package](https://github.com/rxseven/setup-react-app/commit/13be73ed6eecd53885a9309d77c8c2d0e47b59f0)
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/4ca32304ec036b32a16b159050f02d515a194ee3)
+
+#### Importing compiled CSS
+
+You can use Bootstrap’s ready-to-use CSS by simply adding compiled CSS to your project’s dependency entry point.
+
+To do this, open `src/dependencies/index.js` file and add the following import statement:
+
+```diff
++ // Bootstrap CSS
++ export * from 'bootstrap/dist/css/bootstrap.min.css';
+```
+
+> commit: [Add compiled Bootstrap CSS to the dependency entry point](https://github.com/rxseven/setup-react-app/commit/a268343d24fc315754ab918c6ede21bfa1d9ef1f)
 
 [Back to top](#table-of-contents)
