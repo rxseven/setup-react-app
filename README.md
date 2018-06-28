@@ -19,6 +19,7 @@ React app made easy :sunglasses:
 #### Getting Started
 
 - [Setting up a Project](#setting-up-a-project)
+- [Setting up a Code Editor](#setting-up-a-code-editor)
 
 #### Development Workflow
 
@@ -377,5 +378,60 @@ Then, the output should look like this:
 Found '~/setup-react-app/.nvmrc' with version <8.9.3>
 Now using node v8.9.3 (npm v5.5.1)
 ```
+
+[Back to top](#table-of-contents)
+
+## Setting up a Code Editor
+
+Visual Studio Code provides developers with many awesome features that significantly facilitate the process of source code editing. Besides, It also makes sure users won’t be bored when they work with it, as it allows them to customize several parts of its appearance and functionalities, such as themes, fonts, validaton rules, extensions etc.
+
+### Configuring a workspace
+
+Visual Studio Code allows you to customize a **Workspace Settings** on a per-project basis with a pretty straightforward and intuitive way to quickly add your customizations.
+
+You can do this by editing configuration file in JSON format. First, let’s create `.vscode` folder in the project’s root directory:
+
+```sh
+mkdir .vscode
+```
+
+Then, create a configuration file inside that folder:
+
+```sh
+touch .vscode/settings.json
+```
+
+For more information, see [User and Workspace Settings](https://code.visualstudio.com/docs/getstarted/settings).
+
+> commit: [Add VSCode's workspace settings](https://github.com/rxseven/setup-react-app/commit/7cf314d2792f7f2d947dedef3290e20782f1b0e6)
+
+### Enabling syntax highlighting
+
+To enable the syntax highlighting in Visual Studio Code, you need to install [Babel ES6/ES7](https://marketplace.visualstudio.com/items?itemName=dzannotti.vscode-babel-coloring) extension:
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install dzannotti.vscode-babel-coloring` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+### Disabling built-in code formatter and validator
+
+Visual Studio Code has built-in code formatter and validator which is useful for beginners. In the latter section we will be using a better solution which can take your development workflow to the next level.
+
+For the time being, let’s disable the built-in tools through Visual Studio Code’s workspace settings:
+
+1.  In Visual Studio Code, open a **Settings** screen by pressing _command + ,_.
+2.  Select **Workspace Settings** tab.
+3.  And add the following configuration to the empty configuration object:
+
+```
+{
+  // Disable built-in code formatter and validator
+  "editor.formatOnSave": false,
+  "javascript.format.enable": false,
+  "javascript.validate.enable": false
+}
+```
+
+> commit: [Disable built-in VSCode's code formatter and validator](https://github.com/rxseven/setup-react-app/commit/9f8b492bf98d1142a1788c1e26f0dc5bdc5347f2)
 
 [Back to top](#table-of-contents)
