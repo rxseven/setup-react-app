@@ -73,6 +73,7 @@ React app made easy :sunglasses:
 - [Changelog](#changelog)
 - [Acknowledgements](#acknowledgements)
 - [Credits](#credits)
+- [License](#license)
 
 ## Introduction
 
@@ -7544,3 +7545,7 @@ This project is developed and maintained by [Theerawat Pongsupawat](https://www.
 ## Credits
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+
+## License
+
+Setup React App is open source software [licensed as MIT](https://github.com/rxseven/setup-react-app/blob/master/LICENSE).
