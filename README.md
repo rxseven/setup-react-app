@@ -10,7 +10,7 @@ React app made easy :sunglasses:
 
 #### Overview
 
-
+- [Introduction](#introduction)
 
 #### Getting Started
 
@@ -38,3 +38,12 @@ React app made easy :sunglasses:
 
 #### Appendix
 
+
+
+## Introduction
+
+Setting up a React & Redux app from scratch can be a daunting task for beginners. Lots of libraries to install, lots of configuration and other tasks to do to get a project up and running smoothly.
+
+**Setup React App** can save you from time-consuming tasks. You simply clone the project or follow our guidelines to setup your own development workflow from scratch.
+
+[Back to top](#table-of-contents)
