@@ -42,6 +42,7 @@ React app made easy :sunglasses:
 - [Adding Sass and Post-Processing CSS](#adding-sass-and-post-processing-css)
 - [Adding CSS Modules](#adding-css-modules)
 - [Adding Redux](#adding-redux)
+- [Adding React Router](#adding-react-router)
 
 #### Boilerplate & Skeleton
 
@@ -4052,5 +4053,125 @@ export default {
 ```
 
 > commit: [Add asynchronous objects to state models](https://github.com/rxseven/setup-react-app/commit/7e9c16da70f5ae2372e552213a83f85f28227d6f)
+
+[Back to top](#table-of-contents)
+
+## Adding React Router
+
+A client-side route happens when the route is handled internally by the JavaScript that is loaded on the page. When a user clicks on a link, the URL changes but the request to the server is prevented. The adjustment to the URL will result in a changed state of the application. The changed state will ultimately result in a different view of the webpage. This could be the rendering of a new component, or even a request to a server for some data that the application will turn into some HTML elements.
+
+It is important to note that the whole page won’t refresh when using client-side routing. There are just some elements inside the application that will change.
+
+### Installing React Router ecosystem
+
+**[React Router](https://reacttraining.com/react-router/web/guides/philosophy)**
+
+To configure client-side routing, we will be using React Router, the most popular declarative routing for React.
+
+```sh
+yarn add react-router-dom
+```
+
+> commit: [Install react-router-dom package](https://github.com/rxseven/setup-react-app/commit/5bf81e3af920d987fbba78c6b645e7f2a703d005)
+
+**[React Router Last Location](https://github.com/hinok/react-router-last-location)**
+
+A utility provides access to the last location in React Router. Useful for handling internal routing. Easily prevent leaving your app by users.
+
+```sh
+yarn add react-router-last-location
+```
+
+> commit: [Install react-router-last-location package](https://github.com/rxseven/setup-react-app/commit/c132ecb3ae8e2436bb1dc538cea9ca9c21a25dbe)
+
+**[React Router Scroll Memory](https://github.com/ipatate/react-router-scroll-memory)**
+
+A React component to keep the scroll of the page and to restore it if the user clicks a previous button on the browser.
+
+```sh
+yarn add react-router-scroll-memory
+```
+
+> commit: [Install react-router-scroll-memory package](https://github.com/rxseven/setup-react-app/commit/beb868f2d096e65dbe43b10e2867c0489c406f9d)
+
+**Library Definitions**
+
+Finally, don’t forget to update the library definitions:
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/793fed7a6701029f4e67e3233c7b0f090b2d1876)
+
+### Defining paths variable for router
+
+Create `paths.js` file inside `src/constants/router` folder:
+
+```sh
+touch src/constants/router/paths.js
+```
+
+Then, add a placeholder object:
+
+```js
+export default {};
+```
+
+> commit: [Add paths variable for router](https://github.com/rxseven/setup-react-app/commit/32f43e8ce5bfe740974332556b0cf094dfcaed88)
+
+### Creating Routes component
+
+Routes is a component wrapping all routes, it uses the HTML5 history API to keep your UI in sync with the URL.
+
+On the command line, create `Routes` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/Routes
+```
+
+Then, create a component along with its test file inside `Routes`:
+
+```sh
+cd src/components/core/Routes && touch index.jsx index.test.js
+```
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// Module dependencies
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+
+// Component
+const Routes = () => (
+  <Switch>
+    <Route path="/" render={() => <div>Home</div>} />
+  </Switch>
+);
+
+// Module exports
+export default Routes;
+```
+
+You may need to add tests to `index.test.js` file, the following is a simple “smoke test” verifying that a component renders without throwing:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Routes from './index';
+
+// Tests
+describe('components/core/Routes', () => {
+  it('should render without crashing', () => {
+    shallow(<Routes />);
+  });
+});
+```
+
+> commit: [Create Routes component](https://github.com/rxseven/setup-react-app/commit/f58887f3524310f488ed2814f2e4a1a5f07781e0)
 
 [Back to top](#table-of-contents)
