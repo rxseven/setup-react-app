@@ -72,6 +72,7 @@ React app made easy :sunglasses:
 
 - [Changelog](#changelog)
 - [Acknowledgements](#acknowledgements)
+- [Credits](#credits)
 
 ## Introduction
 
@@ -7539,3 +7540,7 @@ See [releases](https://github.com/rxseven/setup-react-app/releases).
 ## Acknowledgements
 
 This project is developed and maintained by [Theerawat Pongsupawat](https://www.linkedin.com/in/pongsupawat/), frontend developer from Chiang Mai, Thailand.
+
+## Credits
+
+This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
