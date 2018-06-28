@@ -39,7 +39,7 @@ React app made easy :sunglasses:
 
 #### Ecosystem
 
-
+- [Adding Sass and Post-Processing CSS](#adding-sass-and-post-processing-css)
 
 #### Boilerplate & Skeleton
 
@@ -3080,5 +3080,171 @@ Open `.vscode/launch.json` file and add the following configuration next to **De
 2.  Open **Debug** panel in Visual Studio Code, select **Debug Tests** from a drop-down menu.
 3.  Start debugging by pressing **F5** or by clicking the **Start Debugging** button next to the drop-down menu.
 4.  You can then write code as usual, set breakpoints, make changes to the code, and debug your newly modified code, all from your editor.
+
+[Back to top](#table-of-contents)
+
+## Adding Sass and Post-Processing CSS
+
+CSS pre-processors are in our development life for years. In their first implementations, they had few features. But nowadays, they are the key ingredients and must have tools for CSS development.
+
+This section will walk you through the steps necessary to setup [Sass](https://sass-lang.com) and [PostCSS](https://postcss.org) in Create React App from the ground up.
+
+### Sass
+
+#### Installation
+
+First, we need to install a library that provides [binding for Node.js to LibSass](https://github.com/sass/node-sass) as a development dependency.:
+
+```sh
+yarn add --dev node-sass
+```
+
+> commit: [Install node-sass package](https://github.com/rxseven/setup-react-app/commit/77e3f8c62ff5c6367625d11b22556684f42e5b50)
+
+We will also need to install [Sass loader](https://github.com/webpack-contrib/sass-loader) for Webpack:
+
+```sh
+yarn add --dev sass-loader
+```
+
+> commit: [Install sass-loader package](https://github.com/rxseven/setup-react-app/commit/f1cffb16e7e9dad46f3fc90df4aaa0022c8264ae)
+
+#### Configuring Sass in development environment
+
+Open `config/webpack.config.dev.js` file and add the following Sass configuration next to CSS section (`test: /\.css$/`):
+
+```js
+// Sass
+{
+  test: /\.scss$/,
+  use: [
+    {
+      loader: require.resolve('style-loader')
+    },
+    {
+      loader: require.resolve('css-loader'),
+      options: {
+        sourceMap: true,
+        importLoaders: 2
+      }
+    },
+    {
+      loader: require.resolve('sass-loader')
+    }
+  ]
+},
+```
+
+> commit: [Setup Sass in development environment](https://github.com/rxseven/setup-react-app/commit/58557c5efb7f49507381535710b6fadadf86a9b9)
+
+#### Configuring Sass in production environment
+
+Open `config/webpack.config.prod.js` file and add the following Sass configuration next to CSS section (`test: /\.css$/`):
+
+```js
+// Sass
+{
+  test: /\.scss$/,
+  use: ExtractTextPlugin.extract(
+    Object.assign(
+      {
+        fallback: {
+          loader: require.resolve('style-loader'),
+          options: {
+            hmr: false,
+          },
+        },
+        use: [
+          {
+            loader: require.resolve('css-loader'),
+            options: {
+              minimize: true,
+              sourceMap: shouldUseSourceMap,
+              importLoaders: 2
+            }
+          },
+          {
+            loader: require.resolve('sass-loader')
+          }
+        ]
+      },
+      extractTextPluginOptions
+    )
+  )
+},
+```
+
+> commit: [Setup Sass in production environment](https://github.com/rxseven/setup-react-app/commit/dfb4b057c9e87476f41c634324877af9da7479a9)
+
+### PostCSS
+
+#### Installation
+
+Create React App ships with [PostCSS loader for Webpack](https://github.com/postcss/postcss-loader) out of the box. It includes everything we need to get PostCSS running. We don’t need to install any additional dependencies.
+
+#### Configuring PostCSS in development environment
+
+Open `config/webpack.config.dev.js` file, under Sass section, add the following PostCSS configuration between `css-loader` and `sass-loader`:
+
+```js
+{
+  loader: require.resolve('postcss-loader'),
+  options: {
+    ident: 'postcss',
+    plugins: () => [
+      require('postcss-flexbugs-fixes'),
+      autoprefixer({
+        browsers: [
+          '>1%',
+          'last 4 versions',
+          'Firefox ESR',
+          'not ie < 9'
+        ],
+        flexbox: 'no-2009',
+      })
+    ]
+  }
+},
+```
+
+> commit: [Setup PostCSS in development environment](https://github.com/rxseven/setup-react-app/commit/4d1fd46527746033c6fee6e410cdd32cc23486eb)
+
+#### Configuring PostCSS in production environment
+
+Open `config/webpack.config.prod.js` file, under Sass section, add the following PostCSS configuration between `css-loader` and `sass-loader`:
+
+```js
+{
+  loader: require.resolve('postcss-loader'),
+  options: {
+    ident: 'postcss',
+    plugins: () => [
+      require('postcss-flexbugs-fixes'),
+      autoprefixer({
+        browsers: [
+          '>1%',
+          'last 4 versions',
+          'Firefox ESR',
+          'not ie < 9'
+        ],
+        flexbox: 'no-2009'
+      })
+    ]
+  }
+},
+```
+
+> commit: [Setup PostCSS in production environment](https://github.com/rxseven/setup-react-app/commit/5f7f887ab195a67f2ba30d8e8fd9b645123bbcb8)
+
+### Excluding CSS files from being committed
+
+Since we will be implementing SCSS rather than plain CSS. Therefore, we need to exclude all CSS files from being committed to the repository. To do this, open `.gitignore` file and add the following entry:
+
+```
+# generated assets
+/src/**/*.css
+```
+
+> commit: [Update Git ignoring list to prevent compiled CSS from being committed to source control](https://github.com/rxseven/setup-react-app/commit/6345bb3d042128619e89f81f289323c246cc52bc)
 
 [Back to top](#table-of-contents)
