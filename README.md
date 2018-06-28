@@ -30,6 +30,7 @@ React app made easy :sunglasses:
 - [Running Stylesheet Linting](#running-stylesheet-linting)
 - [Running Static Type Checking](#running-static-type-checking)
 - [Running Tests](#running-tests)
+- [Formatting Code Automatically](#formatting-code-automatically)
 
 #### Ecosystem
 
@@ -2480,5 +2481,265 @@ describe('components/core/App', () => {
 ```
 
 > commit: [Add tests to App component](https://github.com/rxseven/setup-react-app/commit/5ba99e7568a20d7c221953f287677cff3615c1db)
+
+[Back to top](#table-of-contents)
+
+## Formatting Code Automatically
+
+Having consistent code formatting and style is an important part of reducing cognitive load when working with other developers or when jumping around between projects.
+
+We will be using [Prettier](https://prettier.io), a tool that will format code against some opinionated and standard default formatting rules to ensure all final code maintains a consistent style.
+
+### Setup
+
+#### Installation
+
+Prettier should be installed as a development dependency:
+
+```sh
+yarn add --dev --exact prettier
+```
+
+> commit: [Install prettier package](https://github.com/rxseven/setup-react-app/commit/3c33f581af861ae8b5e031bc811db6a0e49faa33)
+
+#### Configuration
+
+In the project’s root directory, create a configuration file:
+
+```sh
+touch .prettierrc
+```
+
+> commit: [Create Prettier configuration](https://github.com/rxseven/setup-react-app/commit/0f78f4a57fa0b229961132679cd7155cc1b738f4)
+
+Then, add the following configuration to the newly created file:
+
+```json
+{
+  "singleQuote": true
+}
+```
+
+> commit: [Setup Prettier](https://github.com/rxseven/setup-react-app/commit/dfb556a7b6f9121eaa4299ef548c9d8b48bd8f8d)
+
+You may need to define `.prettierrc` as a `JSON` format to Visual Studio Code’s file association list. In `.vscode/settings.json` file, add the following line to `"files.associations"` section:
+
+```diff
+  {
+    // File associations to languages
+    "files.associations": {
+      ...
+      ".lintstagedrc": "json",
++     ".prettierrc": "json",
+      ".stylelintrc": "json"
+    }
+  }
+```
+
+> commit: [Add Prettier configuration to VSCode's file association list](https://github.com/rxseven/setup-react-app/commit/ad2a3469fbc5c6a8270b43d81ee18f7a9b21aa29)
+
+### Ignoring code
+
+Prettier offers an escape hatch to ignore a block of code or prevent entire files from being formatted.
+
+In the project’s root directory, let’s create an ignoring file:
+
+```sh
+touch .prettierignore
+```
+
+> commit: [Create Prettier ignoring file](https://github.com/rxseven/setup-react-app/commit/1feea5ba9a145876e13f9404da9f3f593c3bfee0)
+
+To exclude files from formatting, add entries to a `.prettierignore` file:
+
+```
+/config
+/scripts
+package.json
+README.md
+```
+
+> commit: [Update ignoring list to exclude files from being formatted by Prettier (1)](https://github.com/rxseven/setup-react-app/commit/8f534e02e5d15ec09e08156ba307b05c027eed1d), [(2)](https://github.com/rxseven/setup-react-app/commit/4effb64923d9281c2c92768d550c5b7178cd1f4e)
+
+### Using Prettier extension for code editor
+
+We will be using [Prettier formatter for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) to automatically format our code in the editor.
+
+#### Installatation
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install prettier-vscode` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+#### Configuration
+
+There is one change required to the editor’s settings is to ensure the **Format On Save** functionality is triggered. This ensures the Prettier extension applies the format rules on each save of a supported file type.
+
+To do this, we will need to remove the existing configuration we’ve done in [the previous section](#disabling-built-in-code-formatter-and-validator) in `.vscode/settings.json` file:
+
+```diff
+  {
+-   // Disable built-in code formatter and validator
+-   "editor.formatOnSave": false,
+-   "javascript.format.enable": false,
+
+    ...
+    ...
+  }
+```
+
+Then, add the configuration below:
+
+```diff
+  {
+    ...
+    ...
+
++   // Prettier
++   // Format a file on save.
++   "editor.formatOnSave": true,
+
+    // File associations to languages
+    "files.associations": {..}
+  }
+```
+
+Next, we have to disable the default JavaScript formatter (editor’s built-in) and allow Prettier to handle code formatting:
+
+```
+  {
+    ...
+    ...
+
+    // Flow
+    // Run Flow from local Node modules.
+    "flow.useNPMPackagedFlow": true,
+
++   // Prettier
++   // Disable the default JavaScript formatter (editor’s built-in) and allows
++   // Prettier to handle code formatting.
++   "javascript.format.enable": false
++
+    ...
+    ...
+  }
+```
+
+> commit: [Setup Prettier extension for VSCode](https://github.com/rxseven/setup-react-app/commit/724d08ec03796fc7fe41ac5c7a96edc6d0e01d77)
+
+#### Usage
+
+Head to the [extension’s documentation page](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and follow the instructions.
+
+### Fixing formatting conflicts
+
+We need to configure Prettier and ESLint to work together.
+
+#### Solution
+
+[prettier-eslint](https://github.com/prettier/prettier-eslint) is a lightweight library that will run your code through **Prettier** and then run **ESLint** `--fix`.
+
+This solution allows you to format your code via Prettier, and then pass the result of that to ESLint `--fix`. This way you can get the benefits of Prettier’s superior formatting capabilities, but also benefit from the configuration capabilities of ESLint.
+
+> For files with an extension of `.css`, `.scss`, or `.json` this only runs Prettier since ESLint cannot process those.
+
+#### Installation
+
+We need to install this library as a development dependency:
+
+```sh
+yarn add --dev prettier-eslint
+```
+
+> commit: [Install prettier-eslint package](https://github.com/rxseven/setup-react-app/commit/4ed193c554d9fd454d6af6718c743b0bb346a04c)
+
+#### Configuration
+
+Add the configuration below to `settings.json` file:
+
+```diff
+  {
+    ...
+    ...
+
+    // Flow and ESLint
+    // Use Flow for static type checking and ESLint for JavaScript linting
+    // rather than built-in JavaScript & TypeScript validation.
+-   "javascript.validate.enable": false
++   "javascript.validate.enable": false,
++
++   // Prettier
++   // Use prettier-eslint instead of prettier. Other settings will only be
++   // fallbacks in case they could not be inferred from ESLint rules.
++   "prettier.eslintIntegration": true
+  }
+```
+
+> commit: [Setup Prettier and ESLint integration](https://github.com/rxseven/setup-react-app/commit/13f45b7e6cf3103d2b491109a83e05f9446f5a32)
+
+### Running code formatting through the CLI
+
+Running Prettier this way on the command line outputs to the screen the format changes that would have been made to your code based on the rules of Prettier and ESLint.
+
+#### Installation
+
+We need to install a [prettier-eslint-cli](https://github.com/prettier/prettier-eslint-cli) library, this CLI allows you to use `prettier-eslint` on one or multiple files. `prettier-eslint-cli` forwards on the `filePath` and other relevant options to `prettier-eslint` which identifies the applicable ESLint configuration for each file and uses that to determine the options for `prettier` and `eslint --fix`.
+
+Let’s install the CLI tool as a development dependency:
+
+```sh
+yarn add --dev prettier-eslint-cli
+```
+
+> commit: [Install prettier-eslint-cli package](https://github.com/rxseven/setup-react-app/commit/ee764dfa85f1d6146ba42e30be850de37b058873)
+
+#### Configuration
+
+Open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      "build": "node scripts/build.js",
++     "format": "prettier-eslint --write src/**/*.{js,json,jsx,scss}",
+      "lint:script": "eslint src/**/*.{js,jsx}",
+      ...
+    }
+  }
+```
+
+> commit: [Add script for running code formatting through the CLI](https://github.com/rxseven/setup-react-app/commit/0fe17485fc510dbee388bfb6114b8148ce08ac7b)
+
+#### Usage
+
+Run the following script to format code with Prettier throught the CLI:
+
+```sh
+yarn format
+```
+
+### Preventing formatting violations from being committed
+
+To prevent invalid code from being committed to a repository, we need to setup a pre-commit hook to run Prettier against staged files that about to be committed.
+
+This pre-commit task will re-formatting files that are being marked as "staged" via `git add` before committing consistent code formatting and style to a repository.
+
+In `.lintstagedrc` file, add the following code block:
+
+```diff
+  {
+    ...
+-   "src/**/*.scss": [...]
++   "src/**/*.scss": [...],
++   "src/**/*.{js,json,jsx,scss}": [
++     "yarn format",
++     "git add"
++   ]
+  }
+```
+
+> Note: make sure you have [`yarn format`](#running-code-formatting-through-the-cli) script defined beforehand.
+
+> commit: [Add pre-commit hook for running code formatting against staged files](https://github.com/rxseven/setup-react-app/commit/1aad338b7cd7bdece43dd8683fd1df6be24de25a)
 
 [Back to top](#table-of-contents)
