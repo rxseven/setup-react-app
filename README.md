@@ -27,6 +27,7 @@ React app made easy :sunglasses:
 - [Adding Pre-commit Hooks](#adding-pre-commit-hooks)
 - [Adding React Hot Loader](#adding-react-hot-loader)
 - [Running JavaScript Linting](#running-javascript-linting)
+- [Running Stylesheet Linting](#running-stylesheet-linting)
 
 #### Ecosystem
 
@@ -1520,5 +1521,226 @@ In `.lintstagedrc` file, add the following code block:
 > Note: make sure you have [`yarn lint:script:fix`](#running-code-linting-through-the-cli) script defined beforehand.
 
 > commit: [Add pre-commit hook for running code linting against staged files](https://github.com/rxseven/setup-react-app/commit/64bfb18270544a7172ad2338fa616bb4eb327e79)
+
+[Back to top](#table-of-contents)
+
+## Running Stylesheet Linting
+
+[Stylelint](https://stylelint.io) is a modern CSS linter that helps you enforce consistent conventions and avoid errors in your stylesheets. It analyzes code and reports errors when a piece of code doesn’t pass the rules defined in the linter’s configuration.
+
+### Setup
+
+#### Installation
+
+Stylelint should be installed as a development dependency:
+
+```sh
+yarn add --dev stylelint
+```
+
+> commit: [Install stylelint package](https://github.com/rxseven/setup-react-app/commit/ff155912d1fdea17df80216c5eb0c610201b39fe)
+
+Stylelint by itself supports SCSS syntax very well (as well as other syntaxes) but it was developed to focus on standard CSS.
+
+With [stylelint-scss](https://github.com/kristerkari/stylelint-scss), it introduces rules specific to SCSS syntax. It offers a collection of lint rules for conventions and syntax specific to SCSS.
+
+Let’s install it as well:
+
+```sh
+yarn add --dev stylelint-scss
+```
+
+> commit: [Install stylelint-scss package](https://github.com/rxseven/setup-react-app/commit/41b268eb36443450a34ff6723514faeea9f4724d)
+
+#### Configuration
+
+After you have Stylelint installed, you need to create a configuration file for it. This is where you will configure all the lint rules you want Stylelint to check for.
+
+In the project’s root directory, create a configuration file:
+
+```sh
+touch .stylelintrc
+```
+
+Once the file has created, add the placeholder object below:
+
+```json
+{}
+```
+
+> commit: [Create Stylelint configuration](https://github.com/rxseven/setup-react-app/commit/671660b4ad080facaf685df0040130b940fb7969)
+
+You may need to define `.stylelintrc` as a `JSON` format to Visual Studio Code’s file association list. In `.vscode/settings.json` file, add the following line to `"files.associations"` section:
+
+```diff
+  {
+    // File associations to languages
+    "files.associations": {
+      ".babelrc": "json",
+      ".eslintrc": "json"
+-     ".lintstagedrc": "json"
++     ".lintstagedrc": "json",
++     ".stylelintrc": "json"
+    }
+  }
+```
+
+> commit: [Add Stylint configuration to VSCode's file association list](https://github.com/rxseven/setup-react-app/commit/8537fde960bdf2825e979006b1075fdc3ab52289)
+
+### Using a shareable configuration
+
+We will be using a famous shareable [recommended SCSS configuration](https://github.com/kristerkari/stylelint-config-recommended-scss) for Stylelint. We can use it as is or as a foundation for our own configuration.
+
+#### Installation
+
+On the command line, install the configuration as a development dependency:
+
+```sh
+yarn add --dev stylelint-config-recommended-scss
+```
+
+> commit: [Install stylelint-config-recommended-scss package](https://github.com/rxseven/setup-react-app/commit/279d7fc895d9a8320a3ab510689f16d72c713595)
+
+You may also need another shareable configuration to tweak Stylelint rules to accept [CSS modules specific syntax](https://github.com/pascalduez/stylelint-config-css-modules):
+
+```sh
+yarn add --dev stylelint-config-css-modules
+```
+
+> commit: [Install stylelint-config-css-modules package](https://github.com/rxseven/setup-react-app/commit/b3a03d3f577f21b528c7c42778036b86177cf63a)
+
+#### Configuration
+
+In `.stylelintrc` file, add `stylelint-config-recommended-scss` to `extends` section:
+
+```diff
+- {}
++ {
++   "extends": [
++     "stylelint-config-recommended-scss"
++   ]
++ }
+```
+
+> commit: [Setup shareable recommended SCSS configuration for Stylelint](https://github.com/rxseven/setup-react-app/commit/b950a5a1c66a7e795fb76f5cbcaaa83e395db2b2)
+
+Follow by `stylelint-config-css-modules`:
+
+```diff
+  {
+    "extends": [
+-     "stylelint-config-recommended-scss"
++     "stylelint-config-recommended-scss",
++     "stylelint-config-css-modules"
+    ]
+  }
+```
+
+> commit: [Setup shareable CSS modules configuration for Stylelint](https://github.com/rxseven/setup-react-app/commit/3c2b8fbf76dc820f31e0788315142323679e2bfc)
+
+### Overriding linting rules
+
+In `.stylelinerc` file, add the following `rules` section to prevent Stylelint from warning against Sass directives:
+
+```json
+{
+  "rules": {
+    "at-rule-no-unknown": [true, {
+      "ignoreAtRules": ["each", "extend", "function", "if", "include", "mixin"]
+    }],
+    "no-descending-specificity": null
+  }
+}
+```
+
+> commit: [Override Stylelint shareable rules](https://github.com/rxseven/setup-react-app/commit/b3b1b9fc010fb21e116ac7f08aa87078e0606323)
+
+### Display lint output in the editor
+
+We will be using [Stylelint extension for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=shinnn.stylelint) to automatically lint our stylesheet code in the editor.
+
+#### Installatation
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install stylelint` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+#### Usage
+
+Head to the [extension’s documentation page](https://marketplace.visualstudio.com/items?itemName=shinnn.stylelint) and follow the instructions.
+
+#### Configuration
+
+To prevent both the editor’s stylesheet built-in linters and this extension from reporting essentially the same errors, we need to disable the editor’s tools in Visual Studio Code’s **Workspace Settings**.
+
+Let’s Add the following configuration to `.vscode/settings.json` file:
+
+```
+{
+  // Stylelint
+  // Prevent both the editor’s stylesheet built-in linters and Stylelint
+  // from reporting essentially the same errors.
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+}
+```
+
+> commit: [Setup Stylelint extension for VSCode](https://github.com/rxseven/setup-react-app/commit/30d1d4bc19f1ad8432bc6f2236524316e6c2a3c4)
+
+### Running stylesheet linting through the CLI
+
+We will define a script for running stylesheet linting against the entire project from the command line.
+
+#### Configuration
+
+Open `package.json` file and add the following script to `scripts` section:
+
+```diff
+  {
+    "scripts": {
+      ...
+      "lint:script:fix": "eslint --fix src/**/*.{js,jsx}",
++     "lint:stylesheet": "stylelint \"src/**/*.scss\"",
+      "precommit": "lint-staged",
+      ...
+    }
+  }
+```
+
+> Note: be sure to include the quotation marks around file globs. This ensures that you can use the powers of node-glob (like the `**` globstar) regardless of your shell. For more information, see [The stylelint CLI](https://stylelint.io/user-guide/cli/#examples).
+
+> commit: [Add script for running stylesheet linting through the CLI](https://github.com/rxseven/setup-react-app/commit/e547e4ab4e5bdbd88e32964b2cedaadceaf47812)
+
+#### Usage
+
+Run the following script to lint stylesheet with Stylelint through the CLI:
+
+```sh
+yarn lint:stylesheet
+```
+
+### Preventing linting violations from being committed
+
+To prevent invalid stylesheet from being committed to a repository, we need to setup a pre-commit hook to run Stylelint against staged stylesheet files that about to be committed.
+
+This pre-commit task will check (lint) `.scss` files that are being marked as "staged" via `git add` before committing valid stylesheet to a repository.
+
+In `.lintstagedrc` file, add the following code block:
+
+```diff
+  {
+-   "src/**/*.{js,jsx}": [...]
++   "src/**/*.{js,jsx}": [...],
++   "src/**/*.scss": [
++     "yarn lint:stylesheet",
++     "git add"
++   ]
+  }
+```
+
+> Note: make sure you have [`yarn lint:stylesheet`](#running-stylesheet-linting-through-the-cli) script defined beforehand.
+
+> commit: [Add pre-commit hook for running stylesheet linting against staged files](https://github.com/rxseven/setup-react-app/commit/428df764483faaecaae483356a68158e02f141b6)
 
 [Back to top](#table-of-contents)
