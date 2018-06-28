@@ -51,6 +51,7 @@ React app made easy :sunglasses:
 - [Adding a Global Stylesheet](#adding-a-global-stylesheet)
 - [Adding Sass Boilerplate](#adding-sass-boilerplate)
 - [Adding a Layout Boilerplate](#adding-a-layout-boilerplate)
+- [Adding Common Components](#adding-common-components)
 
 #### Enhancement
 
@@ -4567,5 +4568,1023 @@ And add the following import statement to the Sass starting point:
 ```
 
 > commit: [Add base layout to main HTML elements](https://github.com/rxseven/setup-react-app/commit/b3ac48294e5d99d0f3a0466d5891b6fb157346eb)
+
+[Back to top](#table-of-contents)
+
+## Adding Common Components
+
+### Grid
+
+On the command line, create `Grid` folder inside `src/components/common`:
+
+```sh
+mkdir src/components/common/Grid
+```
+
+Then, create an index file inside `Grid`:
+
+```sh
+touch src/components/common/Grid/index.js
+```
+
+> commit: [Create Grid index](https://github.com/rxseven/setup-react-app/commit/0449424e65bc75d15296f60d80b27f269599dfa8)
+
+### Container
+
+Create `Container` folder inside `Grid`:
+
+```sh
+mkdir src/components/common/Grid/Container
+```
+
+Then, create a component along with its test file inside `Container`:
+
+```sh
+cd src/components/common/Grid/Container
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+
+// Component
+const Container = ({ children }: Props): Return => <div className="container">{children}</div>;
+
+// Module exports
+export default Container;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Container from './index';
+
+// Tests
+describe('components/common/Grid/Container', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Container>{children}</Container>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+
+  it('should have a correct class name', () => {
+    // Mock data
+    const children = <div>Content</div>;
+    const className = 'container';
+
+    // Shallow rendering
+    const wrapper = shallow(<Container>{children}</Container>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual(className);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```js
+// eslint-disable-next-line
+export { default as Container } from './Container';
+```
+
+> commit: [Create Container component](https://github.com/rxseven/setup-react-app/commit/2f0256940caa5cfea51e1b72a30eb3413a02982f)
+
+### Row
+
+Create `Row` folder inside `Grid`:
+
+```sh
+mkdir src/components/common/Grid/Row
+```
+
+Then, create a component along with its test file inside `Row`:
+
+```sh
+cd src/components/common/Grid/Row
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import cx from 'classnames';
+import * as React from 'react';
+
+// Types
+type Props = {
+  alignment?: string,
+  children: React.Node
+};
+type Return = React.Node;
+
+// Default props
+const defaultProps = {
+  alignment: null
+};
+
+// Component
+const Row = ({ alignment, children }: Props): Return => (
+  <div className={cx('row', alignment)}>{children}</div>
+);
+
+// Specify default values for props
+Row.defaultProps = defaultProps;
+
+// Module exports
+export default Row;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Row from './index';
+
+// Tests
+describe('components/common/Grid/Row', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Row>{children}</Row>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+
+  it('should have a correct class name', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Row>{children}</Row>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual('row');
+  });
+
+  it('should accept "alignment" prop', () => {
+    // Mock data
+    const alignment = 'justify-content-center';
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Row alignment={alignment}>{children}</Row>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual(`row ${alignment}`);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```diff
+- // eslint-disable-next-line
+  export { default as Container } from './Container';
++ export { default as Row } from './Row';
+```
+
+> commit: [Create Row component](https://github.com/rxseven/setup-react-app/commit/9add857506aa7a0a27121c8f1a916d3484b6e919)
+
+### Column
+
+Create `Column` folder inside `Grid`:
+
+```sh
+mkdir src/components/common/Grid/Column
+```
+
+Then, create a component along with its test file inside `Column`:
+
+```sh
+cd src/components/common/Grid/Column
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Props = {
+  children: React.Node,
+  size?: string
+};
+type Return = React.Node;
+
+// Default props
+const defaultProps = {
+  size: 'col'
+};
+
+// Component
+const Column = ({ children, size }: Props): Return => <div className={size}>{children}</div>;
+
+// Specify default values for props
+Column.defaultProps = defaultProps;
+
+// Module exports
+export default Column;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Column from './index';
+
+// Tests
+describe('components/common/Grid/Column', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Column>{children}</Column>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+
+  it('should render default column width', () => {
+    // Mock data
+    const children = <div>Content</div>;
+    const size = 'col';
+
+    // Shallow rendering
+    const wrapper = shallow(<Column>{children}</Column>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual(size);
+  });
+
+  it('should accept "size" prop', () => {
+    // Mock data
+    const children = <div>Content</div>;
+    const size = 'col-sm-12';
+
+    // Shallow rendering
+    const wrapper = shallow(<Column size={size}>{children}</Column>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual(size);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```diff
++ export { default as Column } from './Column';
+  export { default as Container } from './Container';
+  export { default as Row } from './Row';
+```
+
+> commit: [Create Column component](https://github.com/rxseven/setup-react-app/commit/8cb8d22daffaa93efa7f02fb4c0c3baae6c94746)
+
+### Layout
+
+On the command line, create `Layout` folder inside `src/components/common`:
+
+```sh
+mkdir src/components/common/Layout
+```
+
+Then, create a component along with its test file inside `Layout`:
+
+```sh
+cd src/components/common/Layout
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import { Column, Row } from 'components/common/Grid';
+
+// Types
+type Props = {
+  children: React.Node,
+  size?: string
+};
+type Return = React.Node;
+
+// Default props
+const defaultProps = {
+  size: 'col-md-10 col-lg-8'
+};
+
+// Component
+const Layout = ({ children, size }: Props): Return => (
+  <Row alignment="justify-content-sm-center">
+    <Column size={size}>{children}</Column>
+  </Row>
+);
+
+// Specify default values for props
+Layout.defaultProps = defaultProps;
+
+// Module exports
+export default Layout;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import { Column, Row } from 'components/common/Grid';
+import Layout from './index';
+
+// Tests
+describe('components/common/Layout', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Layout>{children}</Layout>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+
+  it('should contain a correct layout structure', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Layout>{children}</Layout>);
+
+    // Assertions
+    expect(wrapper.find(Row)).toHaveLength(1);
+    expect(wrapper.find(Row).find(Column)).toHaveLength(1);
+  });
+
+  it('should contain <Row /> component with default "alignment" prop', () => {
+    // Mock data
+    const children = <div>Content</div>;
+    const alignment = 'justify-content-sm-center';
+
+    // Shallow rendering
+    const wrapper = shallow(<Layout>{children}</Layout>);
+
+    // Assertions
+    expect(wrapper.find(Row).prop('alignment')).toEqual(alignment);
+  });
+
+  it('should accept "size" prop', () => {
+    // Mock data
+    const children = <div>Content</div>;
+    const size = 'col-sm-12';
+
+    // Shallow rendering
+    const wrapper = shallow(<Layout size={size}>{children}</Layout>);
+
+    // Assertions
+    expect(wrapper.find(Column).prop('size')).toEqual(size);
+  });
+});
+```
+
+> commit: [Create Layout component](https://github.com/rxseven/setup-react-app/commit/8634671b92e0730d6c7e7727c706ca3f86c2177a)
+
+### Page
+
+On the command line, create `Page` folder inside `src/components/common`:
+
+```sh
+mkdir src/components/common/Page
+```
+
+Then, create an index file inside `Page`:
+
+```sh
+touch src/components/common/Page/index.js
+```
+
+> commit: [Create Page index](https://github.com/rxseven/setup-react-app/commit/4e961701ac7635396430ffaf96ef0b434cdd92e3)
+
+### Document
+
+Create `Document` folder inside `Page`:
+
+```sh
+mkdir src/components/common/Page/Document
+```
+
+Then, create a component along with its test file inside `Document`:
+
+```sh
+cd src/components/common/Page/Document
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+
+// Component
+export const Document = ({ children }: Props): Return => children;
+
+// Module exports
+export default Document;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Document from './index';
+
+// Tests
+describe('components/common/Page/Document', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Document>{children}</Document>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```js
+// eslint-disable-next-line
+export { default as Document } from './Document';
+```
+
+> commit: [Create Document component](https://github.com/rxseven/setup-react-app/commit/ab83f57ab0c81913e62578f705cb6583305c1e1c)
+
+### Body
+
+Create `Body` folder inside `Page`:
+
+```sh
+mkdir src/components/common/Page/Body
+```
+
+Then, create a component along with its test file inside `Body`:
+
+```sh
+cd src/components/common/Page/Body
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+
+// Component
+const Body = ({ children }: Props): Return => children;
+
+// Module exports
+export default Body;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Body from './index';
+
+// Tests
+describe('components/common/Page/Body', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Body>{children}</Body>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```diff
+- // eslint-disable-next-line
++ export { default as Body } from './Body';
+  export { default as Document } from './Document';
+```
+
+> commit: [Create Body component](https://github.com/rxseven/setup-react-app/commit/dd44e3fc244efc506939ba4dc2eed26d91322189)
+
+### Head
+
+Create `Head` folder inside `Page`:
+
+```sh
+mkdir src/components/common/Page/Head
+```
+
+Then, create a component along with its test file inside `Head`:
+
+```sh
+cd src/components/common/Page/Head
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+
+// Component
+const Head = ({ children }: Props): Return => children;
+
+// Module exports
+export default Head;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Head from './index';
+
+// Tests
+describe('components/common/Page/Head', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Head>{children}</Head>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```diff
+  export { default as Body } from './Body';
+  export { default as Document } from './Document';
++ export { default as Head } from './Head';
+```
+
+> commit: [Create Head component](https://github.com/rxseven/setup-react-app/commit/a08de93a5e15bd59bd034daebfaaf9608250cdbe)
+
+### Title
+
+Create `Title` folder inside `Page`:
+
+```sh
+mkdir src/components/common/Page/Title
+```
+
+Then, create a component along with its test file inside `Title`:
+
+```sh
+cd src/components/common/Page/Title
+touch index.jsx index.test.js
+```
+
+#### Dependencies
+
+You may need to dynamically update the page title based on the content or from React component, you can use [React Helmet](https://github.com/nfl/react-helmet), a third party library.
+
+React Helmet is a document head manager for React. It takes plain HTML tags and outputs plain HTML tags. It is so simple, and React beginner friendly.
+
+Let’s install the library as a depencency:
+
+```sh
+yarn add react-helmet
+```
+
+> commit : [Install react-helmet package](https://github.com/rxseven/setup-react-app/commit/4ac95f45459c24dbe48ef6322a7b6c6447ebf3aa)
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/502f0a0aae47178e6332a250cded7c8f3ace55e5)
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+import { Helmet } from 'react-helmet';
+
+// Types
+type Props = { children: React.Node };
+type Render = React.Node;
+
+// Component
+export const Title = ({ children }: Props): Render => (
+  <Helmet>
+    <title>{children}</title>
+  </Helmet>
+);
+
+// Module exports
+export default Title;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Title from './index';
+
+// Tests
+describe('components/common/Page/Title', () => {
+  it('should render children', () => {
+    // Mock data
+    const text = 'Page title';
+
+    // Shallow rendering
+    const wrapper = shallow(<Title>{text}</Title>);
+
+    // Assertions
+    expect(wrapper.find('title').text()).toEqual(text);
+  });
+});
+```
+
+#### Index
+
+Next, add the export statement below to the index file:
+
+```diff
+  export { default as Body } from './Body';
+  export { default as Document } from './Document';
+  export { default as Head } from './Head';
++ export { default as Title } from './Title';
+```
+
+> commit: [Create Title component](https://github.com/rxseven/setup-react-app/commit/c5e17895b6d6c9d8f552cd0363b3aaa5eb9f4303)
+
+### Spinner
+
+On the command line, create `Spinner` folder inside `src/components/common`:
+
+```sh
+mkdir src/components/common/Spinner
+```
+
+Then, create a component along with its test file and stylesheets inside `Spinner`:
+
+```sh
+cd src/components/common/Spinner
+touch index.jsx index.test.js styles.scss
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Return = React.Node;
+
+// Component
+const Spinner = (): Return => <div styleName="spinner">Loading...</div>;
+
+// Module exports
+export default Spinner;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Spinner from './index';
+
+// Tests
+describe('components/common/Spinner', () => {
+  it('should render a correct output', () => {
+    // Mock data
+    const data = 'Loading...';
+
+    // Shallow rendering
+    const wrapper = shallow(<Spinner />);
+
+    // Assertions
+    expect(wrapper.text()).toEqual(data);
+  });
+});
+```
+
+#### Styles
+
+Let’s add a minimal amount of styles to the component as below:
+
+```scss
+// Container
+.container {
+  display: block;
+}
+```
+
+> commit: [Create Spinner component](https://github.com/rxseven/setup-react-app/commit/cd6618b1109f8e19b7c8315a8c3d83fd61176606)
+
+### ExLink
+
+On the command line, create `ExLink` folder inside `src/components/common`:
+
+```sh
+mkdir src/components/common/ExLink
+```
+
+Then, create a component along with its test file inside `ExLink`:
+
+```sh
+cd src/components/common/ExLink
+touch index.jsx index.test.js
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Types
+type Props = {
+  children: React.Node,
+  replace?: boolean,
+  styles?: string,
+  to: string
+};
+type Return = React.Node;
+
+// Default props
+const defaultProps = {
+  replace: false,
+  styles: 'link'
+};
+
+// Component
+const ExLink = (props: Props): Return => {
+  const {
+    children, replace, styles, to
+  } = props;
+
+  return (
+    <a className={styles} href={to} rel="noopener noreferrer" target={replace ? '_self' : '_blank'}>
+      {children}
+    </a>
+  );
+};
+
+// Specify default values for props
+ExLink.defaultProps = defaultProps;
+
+// Module exports
+export default ExLink;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import ExLink from './index';
+
+// Tests
+describe('components/common/ExLink', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+
+  it('should render a correct attribute value', () => {
+    // Mock data
+    const children = 'External link';
+    const rel = 'noopener noreferrer';
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper.prop('rel')).toEqual(rel);
+  });
+
+  it('should render default "target" attribute', () => {
+    // Mock data
+    const children = 'External link';
+    const target = '_blank';
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper.prop('target')).toEqual(target);
+  });
+
+  it('should render default "class" attribute', () => {
+    // Mock data
+    const children = 'External link';
+    const style = 'link';
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual(style);
+  });
+
+  it('should accept "replace" prop', () => {
+    // Mock data
+    const children = 'External link';
+    const replace = true;
+    const target = '_self';
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink replace={replace}>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper.prop('target')).toEqual(target);
+  });
+
+  it('should accept "to" prop', () => {
+    // Mock data
+    const children = 'External link';
+    const to = 'https://setup-react-app.herokuapp.com';
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink to={to}>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper.prop('href')).toEqual(to);
+  });
+
+  it('should accept "styles" prop', () => {
+    // Mock data
+    const children = 'External link';
+    const styles = 'nav-link';
+
+    // Shallow rendering
+    const wrapper = shallow(<ExLink styles={styles}>{children}</ExLink>);
+
+    // Assertions
+    expect(wrapper.prop('className')).toEqual(styles);
+  });
+});
+```
+
+> commit: [Create ExLink component(1)](https://github.com/rxseven/setup-react-app/commit/dcc176fd724c9d18ee2e708c6b9b36e7b70d9066), [(2)](https://github.com/rxseven/setup-react-app/commit/29882de8f9c1fa9659677cf7cedbde25f2788762)
 
 [Back to top](#table-of-contents)
