@@ -32,6 +32,7 @@ React app made easy :sunglasses:
 - [Running Tests](#running-tests)
 - [Formatting Code Automatically](#formatting-code-automatically)
 - [Using JSX Control Statements](#using-jsx-control-statements)
+- [Using Absolute Imports](#using-absolute-imports)
 
 #### Ecosystem
 
@@ -2832,5 +2833,89 @@ Open `.eslintrc` file and add the following configuration:
 ```
 
 > commit: [Update ESLint configuration to support JSX control statements syntax](https://github.com/rxseven/setup-react-app/commit/e4491485988cbafe1a1e3d8d1edb07960080d4f6)
+
+[Back to top](#table-of-contents)
+
+## Using Absolute Imports
+
+By default ES6 modules in Create React App environment use relative paths like `../`, which is fine for cases where the files you’re importing are relatively close within the file tree (for example, `index.jsx` and `index.test.js`).
+
+But using relative paths is a real pain when you start dealing with deeply nested tree structures because you end up with **dot.dot** syndrome :weary:
+
+### Implementing absolute imports in Create React App
+
+Create React App supports the [`NODE_PATH`](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#advanced-configuration) variable for setting up custom import paths. Let’s improve our development workflow with absolute imports by adding the following line to `.env` file:
+
+```
+# Absolute path
+NODE_PATH=src/
+```
+
+> This solution works with all environments since variables defined in `.env` file will act as the defaults.
+
+There is a few more things we need to do...
+
+### Linting
+
+To prevent ESLint’s `import/no-extraneous-dependencies` rule from violation since it doesn’t recognize absolute paths, we need to tell ESLint to aware of this.
+
+To do this, open `.eslintrc` file and add the following `settings` next to `rules` section:
+
+```json
+{
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "moduleDirectory": ["node_modules", "src/"]
+      }
+    }
+  }
+}
+```
+
+### Type checking
+
+To prevent Flow’s **Cannot resolve module** error occure, we also need to tell Flow to aware of this as well.
+
+By default, Flow will look in directories named `node_modules` for node modules. You can configure this behavior with this option.
+
+In `.flowconfig` file, add `resolve_dirname` property to `[options]` section as below:
+
+```diff
+  [options]
+  ...
+  module.file_ext=.scss
++ module.system.node.resolve_dirname=src
+
+  [strict]
+```
+
+Now, you are all good with ES6 absolute imports.
+
+> commit: [Setup absolute import statements](https://github.com/rxseven/setup-react-app/commit/88bb5760af8f3a3f0b3f35afe7aca9f268a46e3b)
+
+### Applying absolute imports
+
+You may need to apply absolute imports to the project starting point.
+
+To do this, open `src/index.jsx` file and update with the following changes:
+
+```diff
+  ...
+  ...
+
+- import registerServiceWorker from './registerServiceWorker';
++ import registerServiceWorker from 'registerServiceWorker';
+
+  // Starting point component
+- import App from './components/core/App';
++ import App from 'components/core/App';
+
+  // Constants
+- import HTML from './constants/elements/html';
++ import HTML from 'constants/elements/html';
+```
+
+> commit: [Apply absolute imports to the project starting point](https://github.com/rxseven/setup-react-app/commit/8a53681e581e8e8272af1799e180cbe8fd084217)
 
 [Back to top](#table-of-contents)
