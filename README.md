@@ -55,6 +55,7 @@ React app made easy :sunglasses:
 - [Adding Core Components](#adding-core-components)
 - [Adding Main Screens](#adding-main-screens)
 - [Adding API Services](#adding-api-services)
+- [Adding the App Skeleton](#adding-the-app-skeleton)
 
 #### Enhancement
 
@@ -6662,5 +6663,56 @@ yarn type:install
 ```
 
 > commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/e6b3545062d1caf8b93502859a2a3b938c0ee22e)
+
+[Back to top](#table-of-contents)
+
+## Adding the App Skeleton
+
+We will construct the app skeleton by combining core components together and wrap the entire structure with Router component. The Router will use the HTML5 history API to keep our UI in sync with the URL.
+
+To do that, open `src/components/core/App/index.jsx` file and update with the content below:
+
+```diff
+  // @flow
+  // Module dependencies
+  import * as React from 'react';
+  import { hot } from 'react-hot-loader';
++ import { BrowserRouter as Router } from 'react-router-dom';
++ import { LastLocationProvider as Location } from 'react-router-last-location';
++ import ScrollMemory from 'react-router-scroll-memory';
++
++ import Content from '../Content';
++ import Footer from '../Footer';
++ import Header from '../Header';
++ import Main from '../Main';
++ import Routes from '../Routes';
++ import Wrapper from '../Wrapper';
+
+  // Component
+- const App = () => <div>App component</div>;
++ const App = () => (
++   <Router>
++     <React.Fragment>
++       <ScrollMemory />
++       <Location>
++         <Wrapper>
++           <Header />
++           <Content>
++             <Main>
++               <Routes />
++             </Main>
++             <Footer />
++           </Content>
++         </Wrapper>
++       </Location>
++     </React.Fragment>
++   </Router>
++ );
+
+  // Module exports
+  export default hot(module)(App);
+```
+
+> commit: [Add app skeleton](https://github.com/rxseven/setup-react-app/commit/77db3bfa516fe75a80fbab652717d6649241e35f)
 
 [Back to top](#table-of-contents)
