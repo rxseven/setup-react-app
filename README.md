@@ -64,7 +64,7 @@ React app made easy :sunglasses:
 
 #### Deployment & Automated Tasks
 
-
+- [Deployment](#deployment)
 
 #### Appendix
 
@@ -7118,5 +7118,198 @@ Open `src/components/core/Routes/index.jsx` file and update with the following c
 ```
 
 > commit: [Refactor Routes component with route-based code-splitting](https://github.com/rxseven/setup-react-app/commit/dc7f69e766c7191a4ad8c4bc09d72c61a78b404d)
+
+[Back to top](#table-of-contents)
+
+## Deployment
+
+With your app all tested up through this point, it’s time to get it up and live for the world to see. Now, comes a time when you need to deploy your application on a testing or production server and ask yourself “how?”.
+
+### Choosing the right server
+
+First thing you need to figure out is what kind of server environment will you need for hosting your app.
+
+Our React & Redux app will be just a static website like we used to do back in 1990 before PHP took the world by a storm. Our deployment process will at the very basic level be “put the files on the server”. There are some edge cases which we will cover later on.
+
+### Introducing Heroko
+
+[Heroku](https://www.heroku.com) is a container-based cloud Platform as a Service (PaaS). The platform is elegant, flexible, and easy to use, offering developers the simplest path to getting their apps to market.
+
+This section will demonstrate how to deploy your React app to Heroku using [Heroku Git](https://devcenter.heroku.com/articles/git).
+
+### Setting up deployment tools
+
+#### Heroku CLI
+
+Before you get started, you must have [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed on your machine.
+
+Heroku CLI makes it easy to create and manage your Heroku apps directly from the terminal. It’s an essential part of using Heroku. To install it, follow the [Heroku CLI installation instructions](https://devcenter.heroku.com/articles/heroku-cli#download-and-install).
+
+To verify your CLI installation, use the command below:
+
+```sh
+heroku --version
+```
+
+You should see something like `heroku/7.0.17 darwin-x64 node-v10.0.0` in the output.
+
+After the installation, run the following command to log in with your Heroku account credentials:
+
+```sh
+heroku login
+Enter your Heroku credentials.
+Email: me@mail.com
+Password (typing will be hidden):
+Authentication successful.
+```
+
+> The CLI saves your email address and an API token to your `~/.netrc` directory for future use. For more information, see [Heroku CLI Authentication](https://devcenter.heroku.com/articles/authentication).
+
+#### Heroku Repo plugin
+
+You may need to install a [plugin for Heroku CLI](https://github.com/heroku/heroku-repo) that can manipulate the repo. This plugin adds some commands to the Heroku CLI to interact with the app’s repo.
+
+On the command line, run the following command to install the plugin:
+
+```sh
+heroku plugins:install heroku-repo
+```
+
+Now you’re good to go!
+
+### Creating a Heroku remote
+
+Git remotes are versions of your repository that live on other servers. You deploy your app by pushing its code to a special Heroku-hosted remote that’s associated with your app.
+
+#### For a new Heroku app
+
+The `heroku create` command creates a new empty application on Heroku, along with an associated empty Git repository.
+
+On the command line, run the following command in your project’s root directory:
+
+```sh
+heroku create setup-react-app
+```
+
+> If you run this command in your project’s root directory, the empty Heroku Git repository is automatically set as a remote for your local repository.
+
+To verify that a remote repository named **heroku** is set for your project successfully, run a command:
+
+```sh
+git remote -v
+```
+
+The output should look like this:
+
+```
+heroku  https://git.heroku.com/setup-react-app.git (fetch)
+heroku  https://git.heroku.com/setup-react-app.git (push)
+origin  https://rxseven@github.com/rxseven/setup-react-app.git (fetch)
+origin  https://rxseven@github.com/rxseven/setup-react-app.git (push)
+```
+
+> Note: the **origin** is hosted on GitHub.
+
+#### For an existing Heroku app
+
+If you have already created your Heroku app, you can easily add a remote to your local repository with the following command. All you need is your Heroku app’s name:
+
+```sh
+heroku git:remote -a setup-react-app
+```
+
+### Deploying React & Redux app
+
+#### Introducing buildpacks
+
+[Buildpacks](https://devcenter.heroku.com/articles/buildpacks) are scripts that are run when your app is deployed to Heroku. They are used to install dependencies for your app and configure your environment.
+
+#### Setting a buildpack on an application
+
+We will be using [Heroku Buildpack for CRA](https://github.com/mars/create-react-app-buildpack) to transform our deployed React code into a slug, which can then be executed on a dyno.
+
+You can change the buildpack used by an application by setting the buildpack value. When the application is next pushed, the new buildpack will be used. To set the buildpack value to the existing app, run the following command in the project’s root directory:
+
+```sh
+heroku buildpacks:set https://github.com/mars/create-react-app-buildpack.git
+```
+
+> Note: you can manage buildpacks used by your app in Heroku’s project settings page
+
+#### Configuring client-side routing
+
+This section will demonstrate how to fix the client-side routing errors (404) when running a Single Page Application (SPA) on Heroku. For more information, see [this discussion](https://stackoverflow.com/questions/41772411/react-routing-works-in-local-machine-but-not-heroku?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa).
+
+In the project’s root directory, run the following command to create a configuration file:
+
+```sh
+touch static.json
+```
+
+Then, add the configuration below to the newly created file:
+
+```json
+{
+  "clean_urls": false,
+  "root": "build/",
+  "routes": {
+    "/**": "index.html"
+  }
+}
+```
+
+> commit: [Setup client-side routing](https://github.com/rxseven/setup-react-app/commit/7bf662a90e3dfb7879c153ca1b8941c7ad4ecd19)
+
+#### Building for relative paths
+
+By default, Create React App produces a build assuming your app is hosted at the server root.
+
+Specifying the `homepage` field in `package.json` will let Create React App correctly infer the root path to use in the generated HTML file.
+
+Since our app will be hosting at the root path on Heroku, **the `homepage` field must not be defined**.
+
+[This commit was a mistake](https://github.com/rxseven/setup-react-app/commit/2464cdf290b218ec0f3e6d056c752670bc4aec37), it included `homepage` field which we don’t need (as mentioned above). To fix this, remove the following line from `package.json` file:
+
+```diff
+  {
+    ...
+    "version": "0.1.0",
+-   "homepage": "https://github.com/rxseven/setup-react-app",
+    "license": "MIT",
+    ...
+  }
+```
+
+> commit: [Remove homepage field from package.json](https://github.com/rxseven/setup-react-app/commit/d57c1e250b498f0bfbf15347e930e44459c10273)
+
+#### Deploying code
+
+To deploy your app to Heroku, you typically use the `git push` command to push the code from your local repository’s **master** branch to your Heroku remote:
+
+```sh
+git push heroku master
+```
+
+Use this same command whenever you want to deploy the latest committed version of your code to Heroku.
+
+> Note: Heroku only deploys code that you push to the **master** branch of the **heroku** remote. Pushing code to another branch of the remote has no effect.
+
+#### Deploying from a branch besides master
+
+If you want to deploy code to Heroku from a non-master branch of your local repository (for example, **release-0.1.0**), use the following syntax to ensure it is pushed to the remote’s **master** branch:
+
+```sh
+git push heroku release-0.1.0:master
+```
+
+### Resetting a remote repository
+
+To reset a remote repository, run the following command:
+
+```sh
+heroku repo:reset -a setup-react-app
+```
+
+> **Caution** this command will empty the remote repository, please use it carefully.
 
 [Back to top](#table-of-contents)
