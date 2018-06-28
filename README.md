@@ -25,6 +25,7 @@ React app made easy :sunglasses:
 #### Development Workflow
 
 - [Adding Pre-commit Hooks](#adding-pre-commit-hooks)
+- [Adding React Hot Loader](#adding-react-hot-loader)
 
 #### Ecosystem
 
@@ -1170,5 +1171,57 @@ Open `package.json` file and add `precommit` script to `scripts` section:
 ```
 
 > commit: [Add Git pre-commit script](https://github.com/rxseven/setup-react-app/commit/ab5df518a7b2d6579a0eb2cc614f51baef8d81e4)
+
+[Back to top](#table-of-contents)
+
+## Adding React Hot Loader
+
+[React Hot Loader](https://github.com/gaearon/react-hot-loader) is a plugin that allows React components to be live reloaded without the loss of state. It works with Create React App that support both Hot Module Replacement (HMR) and Babel plugins.
+
+#### Installation
+
+You can safely install it as a regular dependency instead of a development dependency:
+
+```sh
+yarn add react-hot-loader
+```
+
+> commit: [Install react-hot-loader package](https://github.com/rxseven/setup-react-app/commit/0f5fcade53df7821b8a1a360fa08f82c269d4087)
+
+#### Configuration
+
+In `config/webpack.config.dev.js` file, add `plugins: ['react-hot-loader/babel']` to Babel loader configuration. Your configuration should look like this:
+
+```diff
+  // Process JS with Babel.
+  {
+    test: /\.(js|jsx|mjs)$/,
+    ...
+    options: {
+      ...
+      cacheDirectory: true,
++
++     // React Hot Loader
++     plugins: ['react-hot-loader/babel']
+    }
+  }
+```
+
+Then, add the lines below to `src/components/core/App/index.jxs` file:
+
+```diff
+  // Module dependencies
+  import React, { Fragment } from 'react';
++ import { hot } from 'react-hot-loader';
+
+  // Component
+  const App = () => <div>App component</div>;
+
+  // Module exports
+- export default App;
++ export default hot(module)(App);
+```
+
+> commit: [Setup React Hot Loader](https://github.com/rxseven/setup-react-app/commit/db81fd345df256f1f4c565bbfd429f58f30540aa)
 
 [Back to top](#table-of-contents)
