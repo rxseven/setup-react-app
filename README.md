@@ -52,6 +52,7 @@ React app made easy :sunglasses:
 - [Adding Sass Boilerplate](#adding-sass-boilerplate)
 - [Adding a Layout Boilerplate](#adding-a-layout-boilerplate)
 - [Adding Common Components](#adding-common-components)
+- [Adding Core Components](#adding-core-components)
 
 #### Enhancement
 
@@ -5586,5 +5587,649 @@ describe('components/common/ExLink', () => {
 ```
 
 > commit: [Create ExLink component(1)](https://github.com/rxseven/setup-react-app/commit/dcc176fd724c9d18ee2e708c6b9b36e7b70d9066), [(2)](https://github.com/rxseven/setup-react-app/commit/29882de8f9c1fa9659677cf7cedbde25f2788762)
+
+[Back to top](#table-of-contents)
+
+## Adding Core Components
+
+### Wrapper
+
+Wrapper is an element containing everything, including elements with fixed positioning.
+
+On the command line, create `Wrapper` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/Wrapper
+```
+
+Then, create a component along with its test file and stylesheets inside `Wrapper`:
+
+```sh
+cd src/components/core/Wrapper
+touch index.jsx index.test.js styles.scss
+```
+
+#### Temporary solution
+
+Please note that this is a tempolary solution to prevent [FOUC](https://www.paulirish.com/2009/fighting-the-font-face-fout/) with CSS modules. So, let’s create a helper function to help with this issue.
+
+Create `utilities.js` file inside `src/helpers`:
+
+```sh
+touch src/helpers/utilities.js
+```
+
+Then, add the content below:
+
+```js
+// @flow
+
+// Deley
+// eslint-disable-next-line
+export const delay = (callback: Function, duration: number) => {
+  setTimeout(() => {
+    callback();
+  }, duration);
+};
+```
+
+> commit: [Create delay helper function](https://github.com/rxseven/setup-react-app/commit/4e2847d49d6c5748144e1741a6199a228a47d801)
+
+Before creating a commponent, we need to specify `wrapper` property to `src/constants/elements/html.js` file:
+
+```diff
+  export default {
+-  root: 'root'
++  root: 'root',
++  wrapper: 'wrapper'
+  };
+```
+
+#### Components
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import { delay } from 'helpers/utilities';
+
+// Constants
+import HTML from 'constants/elements/html';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+type State = { visibility: string };
+
+// Component
+class Wrapper extends React.Component<Props, State> {
+  // Initial state
+  state = { visibility: 'invisible' };
+
+  // After a component is mounted...
+  componentDidMount() {
+    // Set visibility after FOUC has gone
+    delay(this.onVisible, 200);
+  }
+
+  // Set visibility
+  onVisible = () => {
+    this.setState(() => ({ visibility: 'visible' }));
+  };
+
+  // Render component
+  render(): Return {
+    return (
+      <div className={this.state.visibility} id={HTML.wrapper} styleName="container">
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+// Module exports
+export default Wrapper;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Wrapper from './index';
+
+// Tests
+describe('components/core/Wrapper', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Wrapper>{children}</Wrapper>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+#### Styles
+
+Let’s add a minimal amount of styles to the component as below:
+
+```scss
+// Global styles
+@import '../../../styles/base/settings';
+
+// Container
+.container {
+  margin-bottom: $footer-height-xs;
+  margin-top: $header-height-xs;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: $footer-height-sm;
+    margin-top: $header-height-sm;
+  }
+}
+```
+
+> commit: [Create Wrapper component](https://github.com/rxseven/setup-react-app/commit/82e2682a2db6ef589952ac1f09ff6da86cd21237)
+
+### Content
+
+Content is an element wrapping the rest of the content on our page except elements with fixed positioning.
+
+On the command line, create `Content` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/Content
+```
+
+Then, create a component along with its test file inside `Content`:
+
+```sh
+cd src/components/core/Content
+touch index.jsx index.test.js
+```
+
+Before creating a commponent, you need to specify `content` property to `src/constants/elements/html.js` file:
+
+```diff
+  export default {
++  content: 'content',
+   root: 'root',
+   wrapper: 'wrapper'
+  };
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+// Constants
+import HTML from 'constants/elements/html';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+
+// Component
+const Content = ({ children }: Props): Return => <div id={HTML.content}>{children}</div>;
+
+// Module exports
+export default Content;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Content from './index';
+
+// Tests
+describe('components/core/Content', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Content>{children}</Content>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+> commit: [Create Content component](https://github.com/rxseven/setup-react-app/commit/9ebc3a3572247ce2e6301f8030b7ef170ef556e3)
+
+### Header
+
+On the command line, create `Header` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/Header
+```
+
+Then, create a component along with its test file and stylesheets inside `Header`:
+
+```sh
+cd src/components/core/Header
+touch index.jsx index.test.js styles.scss
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import { Column, Container, Row } from 'components/common/Grid';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Return = React.Node;
+
+// Component
+const Header = (): Return => (
+  <header styleName="container">
+    <Container>
+      <Row>
+        <Column>
+          <div styleName="brand">Setup React App</div>
+        </Column>
+      </Row>
+    </Container>
+  </header>
+);
+
+// Module exports
+export default Header;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file, the following is a simple “smoke test” verifying that a component renders without throwing:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Header from './index';
+
+// Tests
+describe('components/core/Header', () => {
+  it('should render without crashing', () => {
+    shallow(<Header />);
+  });
+});
+```
+
+#### Styles
+
+Let’s add a minimal amount of styles to the component as below:
+
+```scss
+// Global styles
+@import '../../../styles/base/settings';
+
+// Container
+.container {
+  align-items: center;
+  background-color: #343a40;
+  display: flex;
+  height: $header-height-xs;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1;
+
+  @media (min-width: $breakpoint-sm) {
+    height: $header-height-sm;
+  }
+}
+
+// Branding
+.brand { /* TODO */ }
+```
+
+> commit: [Create Header component](https://github.com/rxseven/setup-react-app/commit/c2e6635cd66085b3096e23bb261270838a817a72)
+
+### Main
+
+On the command line, create `Main` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/Main
+```
+
+Then, create a component along with its test file and stylesheets inside `Main`:
+
+```sh
+cd src/components/core/Main
+touch index.jsx index.test.js styles.scss
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import { Column, Container, Row } from 'components/common/Grid';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Props = { children: React.Node };
+type Return = React.Node;
+
+// Component
+const Main = ({ children }: Props): Return => (
+  <main styleName="container">
+    <Container>
+      <Row>
+        <Column>{children}</Column>
+      </Row>
+    </Container>
+  </main>
+);
+
+// Module exports
+export default Main;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Main from './index';
+
+// Tests
+describe('components/core/Main', () => {
+  it('should render children', () => {
+    // Mock data
+    const children = <div>Content</div>;
+
+    // Shallow rendering
+    const wrapper = shallow(<Main>{children}</Main>);
+
+    // Assertions
+    expect(wrapper).toContainReact(children);
+  });
+});
+```
+
+#### Styles
+
+Let’s add a minimal amount of styles to the component as below:
+
+```scss
+// Container
+.container {
+  padding-top: 1.5rem;
+}
+```
+
+> commit: [Create Main component](https://github.com/rxseven/setup-react-app/commit/1283f85a742b0569de0ac9642af66fd7751c9c70)
+
+### Footer
+
+On the command line, create `Footer` folder inside `src/components/core`:
+
+```sh
+mkdir src/components/core/Footer
+```
+
+Then, create a component along with its test file and stylesheets inside `Footer`:
+
+```sh
+cd src/components/core/Footer
+touch index.jsx index.test.js styles.scss
+```
+
+#### Component
+
+To create a component, add the content below to `index.jsx` file:
+
+```jsx
+// @flow
+// Module dependencies
+import * as React from 'react';
+
+import ExLink from 'components/common/ExLink';
+import { Column, Container, Row } from 'components/common/Grid';
+
+// Constants
+import URLs from 'constants/router/urls';
+
+// Styles
+import './styles.scss';
+
+// Types
+type Return = React.Node;
+
+// Component
+const Footer = (): Return => (
+  <footer styleName="container">
+    <Container>
+      <Row>
+        <Column>
+          <ul styleName="navigation">
+            <li>
+              <ExLink to={`https://github.com/${URLs.repo}`}>View on GitHub</ExLink>
+            </li>
+          </ul>
+          <div styleName="ci-status">
+            <div className="button-wrapper">
+              <ExLink to={`https://travis-ci.org/${URLs.repo}`}>
+                <img
+                  alt="Build Status"
+                  src={`https://travis-ci.org/${URLs.repo}.svg?branch=master`}
+                />
+              </ExLink>
+              <ExLink to={`https://coveralls.io/github/${URLs.repo}?branch=master`}>
+                <img
+                  src={`https://coveralls.io/repos/github/${URLs.repo}/badge.svg?branch=master`}
+                  alt="Coverage Status"
+                />
+              </ExLink>
+            </div>
+          </div>
+          <div styleName="legal">
+            <p>
+              Designed &amp; built with all the love in{' '}
+              <ExLink to="https://reactjs.org">React</ExLink> &amp;{' '}
+              <ExLink to="https://redux.js.org">Redux</ExLink>.
+            </p>
+            <p>
+              Copyright © 2018{' '}
+              <ExLink to="https://github.com/rxseven">Theerawat Pongsupawat</ExLink>.
+            </p>
+          </div>
+        </Column>
+      </Row>
+    </Container>
+  </footer>
+);
+
+// Module exports
+export default Footer;
+```
+
+#### Tests
+
+You may need to add tests to `index.test.js` file, the following is a simple “smoke test” verifying that a component renders without throwing:
+
+```jsx
+// Module dependencies
+import { shallow } from 'enzyme';
+import React from 'react';
+
+// Components
+import Footer from './index';
+
+// Tests
+describe('components/core/Footer', () => {
+  it('should render without crashing', () => {
+    shallow(<Footer />);
+  });
+});
+```
+
+#### Styles
+
+We will be implementing "sticky footer". The purpose of a sticky footer is that it "sticks" to the bottom of the browser window. But not always, if there is enough content on the page to push the footer lower, it still does that. But if the content on the page is short, a sticky footer will still hang to the bottom of the browser window.
+
+Let’s add styles to the component as below:
+
+```scss
+// Global styles
+@import '../../../styles/base/settings';
+@import '../../../styles/mixins/transition';
+
+// Variables
+$color-bright: #fff;
+$color-light: #999;
+
+// Container
+.container {
+  background-color: #343a40;
+  bottom: 0;
+  color: #999;
+  height: $footer-height-xs;
+  left: 0;
+  padding-top: 1rem;
+  position: absolute;
+  right: 0;
+  text-align: center;
+
+  a {
+    @include transition-link;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  @media (min-width: $breakpoint-sm) {
+    height: $footer-height-sm;
+    padding-top: 1.75rem;
+    text-align: left;
+  }
+}
+
+// Navigation
+.navigation {
+  list-style: none;
+  margin: 0 0 1.15rem 0;
+  padding: 0;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 1.5rem;
+  }
+
+  > li {
+    display: inline;
+    font-size: 0.85rem;
+
+    & + li {
+      margin-left: 1rem;
+    }
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: 0.9rem;
+    }
+  }
+
+  :global(.link) {
+    color: $color-bright;
+
+    &:hover {
+      color: $color-light;
+    }
+  }
+}
+
+// Continuous Integration
+.ci-status {
+  margin-bottom: 1.15rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Legal
+.legal {
+  font-size: 0.8rem;
+
+  @media (min-width: $breakpoint-sm) {
+    font-size: 0.875rem;
+  }
+
+  p {
+    margin-bottom: 0.25rem;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+
+    @media (min-width: $breakpoint-sm) {
+      margin-bottom: 0.35rem;
+    }
+  }
+
+  :global(.link) {
+    color: $color-light;
+
+    &:hover {
+      color: $color-bright;
+    }
+  }
+}
+```
+
+> commit: [Create Footer component](https://github.com/rxseven/setup-react-app/commit/08beb6fe35e6640fa189a78188cf25596851e5ea)
 
 [Back to top](#table-of-contents)
