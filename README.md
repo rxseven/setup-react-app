@@ -48,7 +48,7 @@ React app made easy :sunglasses:
 
 #### Boilerplate & Skeleton
 
-
+- [Adding a Global Stylesheet](#adding-a-global-stylesheet)
 
 #### Enhancement
 
@@ -4246,5 +4246,72 @@ Open `src/dependencies/index.js` file and add the following import statement:
 ```
 
 > commit: [Add compiled Open Iconic CSS to the dependency entry point](https://github.com/rxseven/setup-react-app/commit/4a986bd9031263ce654394c9a5848d36af5b1356)
+
+[Back to top](#table-of-contents)
+
+## Adding a Global Stylesheet
+
+### Creating Sass structure
+
+To create a global Sass’s folder structure, run the following commands in the terminal:
+
+```sh
+mkdir src/styles && cd src/styles
+mkdir base components content mixins placeholders utilities vendor && touch index.scss
+cd base && touch _settings.scss && cd ..
+cd vendor && mkdir frameworks plugins
+```
+
+> Note: you may need to add placeholder styles to `index.scss` and `_settings.scss` files in order to pass stylesheet linting.
+
+After creation, your folder structure should look like this:
+
+```
+styles
+├── base
+│   └── _settings.scss
+├── componentss
+├── content
+├── mixins
+├── placeholders
+├── utilities
+├── vendor
+│   ├── frameworks
+│   └── plugins
+└── index.scss
+```
+
+> commit: [Create global stylesheet structure](https://github.com/rxseven/setup-react-app/commit/50675d56fee3cf44fcc1bf0ebfa7be3c7fa3cd13)
+
+### Creating Sass starting point
+
+With this approach, Sass will take the file that we want to import and combine it with the file we’re importing into so we can serve a single Sass file to the project starting point.
+
+Let’s combine all partials in one place which is a global Sass starting point, open `src/styles/index.scss` then add the following import statements:
+
+```diff
+- // Empty styles
++ // Base
++ @import './base/settings';
+```
+
+> commit: [Setup Sass starting point](https://github.com/rxseven/setup-react-app/commit/a8aa28e0e1d3b015334e5efa1d0b00ffa08d2ca2)
+
+### Applying global styles
+
+Last thing we need to do is to import the global Sass starting point to the project starting point.
+
+To do that, open `src/index.jsx` file and add the following import statement next to the list of module dependencies:
+
+```diff
+  // Module dependencies
+  ...
+  ...
+
++ // Styles
++ import './styles/index.scss';
+```
+
+> commit: [Add global styles to the project starting point](https://github.com/rxseven/setup-react-app/commit/8483aad1b76653c19fb8dc593483d911555d308e)
 
 [Back to top](#table-of-contents)
