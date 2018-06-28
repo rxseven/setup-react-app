@@ -44,6 +44,7 @@ React app made easy :sunglasses:
 - [Adding Redux](#adding-redux)
 - [Adding React Router](#adding-react-router)
 - [Adding Bootstrap](#adding-bootstrap)
+- [Adding Open Iconic](#adding-open-iconic)
 
 #### Boilerplate & Skeleton
 
@@ -4209,5 +4210,41 @@ To do this, open `src/dependencies/index.js` file and add the following import s
 ```
 
 > commit: [Add compiled Bootstrap CSS to the dependency entry point](https://github.com/rxseven/setup-react-app/commit/a268343d24fc315754ab918c6ede21bfa1d9ef1f)
+
+[Back to top](#table-of-contents)
+
+## Adding Open Iconic
+
+[Open Iconic](http://useiconic.com/open) is the open source sibling of [Iconic](http://useiconic.com). It is a hyper-legible collection of 223 icons with a tiny footprint—ready to use with Bootstrap.
+
+#### Installation
+
+On the command line, run the following commands:
+
+```sh
+yarn add open-iconic
+```
+
+> commit: [Install open-iconic package](https://github.com/rxseven/setup-react-app/commit/432b0404bb31ea047059b017a5b0ecf2923c8b36)
+
+```sh
+yarn type:install
+```
+
+> commit: [Update library definitions](https://github.com/rxseven/setup-react-app/commit/8be888a30dc2ca5bf42fcae5f6aa1e9e8922d238)
+
+#### Using Open Iconic’s icon font with Bootstrap
+
+Open `src/dependencies/index.js` file and add the following import statement:
+
+```diff
+  // Bootstrap CSS
+  export * from 'bootstrap/dist/css/bootstrap.min.css';
++
++ // Open Iconic icon font for Bootstrap
++ export * from 'open-iconic/font/css/open-iconic-bootstrap.min.css';
+```
+
+> commit: [Add compiled Open Iconic CSS to the dependency entry point](https://github.com/rxseven/setup-react-app/commit/4a986bd9031263ce654394c9a5848d36af5b1356)
 
 [Back to top](#table-of-contents)
