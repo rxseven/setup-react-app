@@ -34,6 +34,7 @@ React app made easy :sunglasses:
 - [Using JSX Control Statements](#using-jsx-control-statements)
 - [Using Absolute Imports](#using-absolute-imports)
 - [Using HTTPS in Development](#using-https-in-development)
+- [Debugging in the Editor](#debugging-in-the-editor)
 
 #### Ecosystem
 
@@ -2953,5 +2954,56 @@ To do this, open `package.json` file and add the following script to `scripts` s
 #### Usage
 
 Run `yarn start:https` on the command line and view your app in the browser at [https://localhost:3000](https://localhost:3000).
+
+[Back to top](#table-of-contents)
+
+## Debugging in the Editor
+
+Visual Studio Code supports debugging out of the box with Create React App. This feature enables you to write and debug your React code without leaving the editor, and most importantly it enables you to have a continuous development workflow, where context switching is minimal, as you don’t have to switch between tools.
+
+#### Installation
+
+You would need to have the latest version of [Chrome Debugger Extension](https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome) installed, follow the installation below:
+
+1.  Open **Command Palette** in Visial Studio Code by pressing _command + p_.
+2.  Type `ext install debugger-for-chrome` and hit _enter_.
+3.  Reload Visual Studio Code.
+
+#### Configuration
+
+Create a configuration file in `.vscode` folder by running a command in the project’s root directory:
+
+```sh
+touch .vscode/launch.json
+```
+
+Then, add the content below to `launch.json` file:
+
+```json
+{
+  "configurations": [
+    {
+      "name": "Debug JavaScript",
+      "request": "launch",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
+      },
+      "type": "chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceRoot}/src"
+    }
+  ],
+  "version": "0.2.0"
+}
+```
+
+> commit: [Setup JavaScript debugging for VSCode](https://github.com/rxseven/setup-react-app/commit/043a50e0331ad34da748525443a6bd01e4083949)
+
+#### Usage
+
+1.  Start your app by running `yarn start` or `yarn start:https` command.
+2.  Open **Debug** panel in Visual Studio Code, select **Debug JavaScript** from a drop-down menu.
+3.  Start debugging by pressing **F5** or by clicking the **Start Debugging** button next to the drop-down menu.
+4.  You can then write code as usual, set breakpoints, make changes to the code, and debug your newly modified code, all from your editor.
 
 [Back to top](#table-of-contents)
